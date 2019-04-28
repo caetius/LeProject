@@ -1,0 +1,4 @@
+# IDEA config files
+.idea/
+data/
+weights/*
