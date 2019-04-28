@@ -29,9 +29,9 @@ def main():
                         help="Perform validation only.")
     parser.add_argument("--perc_noise", action="store_true", default=0.1,
                         help="Percentage of noise to add.")
-    parser.add_argument("--corr_type", action="store_true", default="mask",
+    parser.add_argument("--corr_type", action="store_true", default="gauss",
                         help="Percentage of noise to add.")
-    parser.add_argument("--verbose", action="store_true", default=False,
+    parser.add_argument("--verbose", action="store_true", default=True,
                         help="Show images as you feed them in, show reconstructions as they come out.")
     args = parser.parse_args()
 
@@ -79,7 +79,6 @@ def main():
             if args.verbose:
                 imshow(inputs[0])
                 imshow(noised[0])
-                imshow(outputs[0])
 
             # ============ Logging ============
             running_loss += loss.data
