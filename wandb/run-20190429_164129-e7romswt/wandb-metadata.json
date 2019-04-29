@@ -1,0 +1,20 @@
+{
+    "root": "/Users/Caetius/Desktop/DL_Final/DAE",
+    "git": {
+        "remote": "https://github.com/caetius/LeProject.git",
+        "commit": "88e2b502afe638bf7d5c6e651d8124f9f401a6ec"
+    },
+    "email": "dlcasabuena@gmail.com",
+    "startedAt": "2019-04-29T16:41:29.755941",
+    "host": "10-19-187-185.dynapool.wireless.nyu.edu",
+    "username": "Caetius",
+    "os": "Darwin-18.5.0-x86_64-i386-64bit",
+    "python": "3.6.7",
+    "cpu_count": 8,
+    "program": "/anaconda3/envs/cpc/lib/python3.6/site-packages/wandb/internal_cli.py",
+    "args": [
+        "{\"command\": \"headless\", \"pid\": 19300, \"stdout_master_fd\": 7, \"stderr_master_fd\": 9, \"cloud\": true, \"port\": 62565}"
+    ],
+    "state": "running",
+    "heartbeatAt": "2019-04-29T16:41:30.319492"
+}

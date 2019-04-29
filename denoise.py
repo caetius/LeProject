@@ -10,7 +10,7 @@ def corrupt_input(corr_type, data, v):
         x_corrupted = salt_and_pepper(data, v)
 
     elif corr_type == 'gauss':
-        x_corrupted = gaussian_noise(data, v, 0.1)
+        x_corrupted = gaussian_noise(data, 0, v)
 
     elif corr_type == 'none':
         x_corrupted = data
