@@ -33,23 +33,7 @@ def main():
     classifier = create_model("classify")
 
     ''' Load data '''
-    loader_sup, loader_unsup, loader_val_sup = nyu_image_loader("../ssl_data_96", 32)
-
-    ''' Do Validation '''
-    if args.valid:
-        print("Loading checkpoint...")
-        classifier.ae.load_state_dict(torch.load("./weights/ae.pkl")) # TODO: - Check weight loading is successful
-        dataiter = iter(loader_val_sup)
-        images, labels = dataiter.next()
-        #print('GroundTruth: ', ' '.join('%5s' % classes[labels[j]] for j in range(16)))
-        imshow(torchvision.utils.make_grid(images))
-
-        images = Variable(images.cuda())
-
-        decoded_imgs = classifier(images)[1]
-        imshow(torchvision.utils.make_grid(decoded_imgs.data))
-
-        exit(0)
+    loader_sup, loader_val_sup, loader_unsup = nyu_image_loader("../ssl_data_96", 32)
 
     # Define an optimizer and criterion
     criterion = nn.MSELoss() # TODO: - Find something better
@@ -73,7 +57,7 @@ def main():
             # ============ Logging ============
             running_loss += loss.data
             if i % 2000 == 1999:
-                wandb.log({"Validation Accuracy": running_loss / 2000,
+                wandb.log({"Validation Loss": running_loss / 2000,
                            "Epoch" : epoch + 1,
                            "Iteration" : i+1,
                            })
@@ -86,6 +70,20 @@ def main():
     if not os.path.exists('./weights'):
         os.mkdir('./weights')
     torch.save(classifier.state_dict(), "./weights/ae.pkl")
+
+
+    ''' Do Validation '''
+    if args.valid:
+        print("Loading checkpoint...")
+        classifier.ae.load_state_dict(torch.load("./weights/ae.pkl"))
+        dataiter = iter(loader_val_sup)
+        images, labels = dataiter.next()
+        # print('GroundTruth: ', ' '.join('%5s' % classes[labels[j]] for j in range(16)))
+        images = Variable(images.cuda())
+        decoded_imgs = classifier.ae(images)[1]
+        if args.verbose:
+            imshow(torchvision.utils.make_grid(images))
+            imshow(torchvision.utils.make_grid(decoded_imgs.data))
 
 
 if __name__ == '__main__':

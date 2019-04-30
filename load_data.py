@@ -47,7 +47,6 @@ def cifar_image_loader(path='./data', batch_size=16):
     testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
                                              shuffle=False, num_workers=2)
     # CIFAR-10 Classes
-    classes = ('plane', 'car', 'bird', 'cat',
-               'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+    val_set = testloader
 
-    return trainloader, testloader, classes
+    return trainloader, testloader, val_set

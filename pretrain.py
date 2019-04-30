@@ -4,7 +4,7 @@ import torch.optim as optim
 from load_data import *
 
 # This project
-from denoise import corrupt_input
+from noise import corrupt_input
 from utils import *
 
 # Torchvision
@@ -36,7 +36,7 @@ def main():
                         help="Perform validation only.", metavar='v')
     parser.add_argument("--perc_noise", '-percentage_of_noise', type=float, default=0.05,
                         help="Percentage of noise to add.", metavar='p')
-    parser.add_argument("--corr_type", '-type_of_noise', type=str, default="mask",
+    parser.add_argument("--corr_type", '-type_of_noise', type=str, default="sp",
                         help="Percentage of noise to add.", metavar='c')
     parser.add_argument("--verbose", '-verbose_mode', type=bool, default=False,
                         help="Show images as you feed them in, show reconstructions as they come out.", metavar='b')
@@ -51,7 +51,7 @@ def main():
     ae = create_model("pretrain")
 
     ''' Load data '''
-    loader_sup, loader_unsup, loader_val_sup = nyu_image_loader("../ssl_data_96", 32)
+    loader_sup, loader_val_sup, loader_unsup = nyu_image_loader("../ssl_data_96", 32)
 
     # Define an optimizer and criterion
     criterion = nn.BCELoss()
@@ -59,13 +59,13 @@ def main():
 
     wandb.watch(ae)
 
-    for epoch in range(10):
+    for epoch in range(30):
         running_loss = 0.0
-        for i, (inputs, _) in enumerate(loader_sup, 0):
+        for i, (inputs, _) in enumerate(loader_unsup, 0):
             inputs = get_torch_vars(inputs)
-            print(inputs.shape)
             noised = corrupt_input(args.corr_type, inputs, args.perc_noise)
-            print("Iteration ", i)
+            noised = get_torch_vars(noised)
+
             # ============ Forward ============
             encoded, outputs = ae(noised)
             loss = criterion(outputs, inputs)
@@ -81,7 +81,7 @@ def main():
             # ============ Logging ============
             running_loss += loss.data
             if i % 2000 == 1999:
-                wandb.log({"Training Accuracy": running_loss / 2000,
+                wandb.log({"Training Loss": running_loss / 2000,
                            "Epoch" : epoch + 1,
                            "Iteration" : i + 1,
                            })
@@ -89,11 +89,11 @@ def main():
                       (epoch + 1, i + 1, running_loss / 2000))
                 running_loss = 0.0
 
-    ''' Save Trained Model '''
-    print('Done Training. Saving Model...')
-    if not os.path.exists('./weights'):
-        os.mkdir('./weights')
-    torch.save(ae.state_dict(), "./weights/ae.pkl")
+        ''' Save Trained Model '''
+        print('Saving Model after epoch ', epoch)
+        if not os.path.exists('./weights'):
+            os.mkdir('./weights')
+        torch.save(ae.state_dict(), "./weights/ae.pkl")
 
     ''' Do Validation '''
     if args.valid:
@@ -102,12 +102,11 @@ def main():
         dataiter = iter(loader_val_sup)
         images, labels = dataiter.next()
         # print('GroundTruth: ', ' '.join('%5s' % classes[labels[j]] for j in range(16)))
-        imshow(torchvision.utils.make_grid(images))
-
         images = Variable(images.cuda())
-
         decoded_imgs = ae(images)[1]
-        imshow(torchvision.utils.make_grid(decoded_imgs.data))
+        if args.verbose:
+            imshow(torchvision.utils.make_grid(images))
+            imshow(torchvision.utils.make_grid(decoded_imgs.data))
 
         exit(0)
 

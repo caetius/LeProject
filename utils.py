@@ -5,7 +5,6 @@ from models import Autoencoder, Classifier
 import torch
 from torch.autograd import Variable
 import numpy as np
-import matplotlib.pyplot as plt
 
 ''' Instantiate Model '''
 def create_model(model_type):
@@ -45,6 +44,7 @@ def get_torch_vars(x):
 
 ''' Display Image '''
 def imshow(img):
+    import matplotlib.pyplot as plt
     npimg = img.cpu().numpy()
     plt.axis('off')
     plt.imshow(np.transpose(npimg, (1, 2, 0)))

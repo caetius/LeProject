@@ -41,9 +41,9 @@ class Classifier(nn.Module):
         super(Classifier, self).__init__()
         self.ae = Autoencoder()
         self.mlp = nn.Sequential(
-            nn.Linear(3*96*96, 1000), # TODO: - Decide what h_dim to use here
+            nn.Linear(6*6*96, 256), # TODO: - Decide what h_dim to use here
             nn.ReLU(),
-            nn.Linear(1000, 10))
+            nn.Linear(256, 10))
         self.softmax = nn.Softmax()
 
     def forward(self, x):
