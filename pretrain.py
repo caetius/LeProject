@@ -33,7 +33,7 @@ def main():
                         help="Perform validation only.", metavar='v')
     parser.add_argument("--perc_noise", '-percentage_of_noise', type=float, default=0.05,
                         help="Percentage of noise to add.", metavar='p')
-    parser.add_argument("--corr_type", '-type_of_noise', type=str, default="sp",
+    parser.add_argument("--corr_type", '-type_of_noise', type=str, default="local_gauss",
                         help="Percentage of noise to add.", metavar='c')
     parser.add_argument("--verbose", '-verbose_mode', type=bool, default=False,
                         help="Show images as you feed them in, show reconstructions as they come out.", metavar='b')
@@ -45,6 +45,9 @@ def main():
 
     ''' IMPORTANT: Name the weights such that there's no naming conflict between runs.'''
     file_path = os.path.dirname(os.path.abspath(__file__))
+    if not os.path.exists(os.path.join(file_path, "weights")):
+        os.mkdir(os.path.join(file_path, 'weights'))
+
     pretrained_weight_name = os.path.join(file_path, "weights/%s/ae_%s.pkl" % (args.corr_type, str(args.perc_noise)))
 
     wandb.config.update(args)

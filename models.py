@@ -41,9 +41,9 @@ class Classifier(nn.Module):
         super(Classifier, self).__init__()
         self.ae = Autoencoder()
         self.mlp = nn.Sequential(
-            nn.Linear(6*6*96, 256), # TODO: - Decide what h_dim to use here
+            nn.Linear(6*6*96, 100), # From Vincent 2010
             nn.ReLU(),
-            nn.Linear(256, 10))
+            nn.Linear(100, 10))
 
     def forward(self, x):
         encoded = self.ae.encoder(x)
