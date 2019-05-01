@@ -10,7 +10,6 @@ import torchvision
 import wandb
 
 def main():
-    wandb.init()
 
     # Parse Args
     parser = argparse.ArgumentParser(description="Train Denoising Autoencoder")
@@ -23,7 +22,9 @@ def main():
     parser.add_argument("--verbose", '-verbose_mode', type=bool, default=False,
                         help="Show images as you feed them in, show reconstructions as they come out.", metavar='b')
     parser.add_argument("--wandb", '-name_of_wandb_proj', type=str, default="le-project",
-                        help="Name of WAND Project.", metavar='w')
+                        help="Name of WAND Project.", metavar='w1')
+    parser.add_argument("--wandb_on", '-is_wand_on', type=bool, default=False,
+                        help="Name of WAND Project.", metavar='w2')
     args = parser.parse_args()
 
     ''' IMPORTANT: Name the weights such that there's no naming conflict between runs.'''
@@ -35,15 +36,13 @@ def main():
         raise Exception('Your pretrained weights folder is missing')
         exit(1)
 
-
-    wandb.config.update(args)
+    if args.wandb_on:
+        wandb.init(project=args.wandb)
+        wandb.config.update(args)
 
 
     # Create model
-    classifier = create_model("classify")
-
-    # Load pretrained weights
-    classifier.ae.load_state_dict(torch.load(pretrained_weight_name))
+    classifier = create_model("classify", ckpt=pretrained_weight_name)
 
     ''' Load data '''
     loader_sup, loader_val_sup, loader_unsup = nyu_image_loader("../ssl_data_96", 32)
@@ -52,10 +51,14 @@ def main():
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(classifier.parameters())
 
-    wandb.watch(classifier)
+    if args.wandb_on:
+        wandb.watch(classifier)
 
-    for epoch in range(100):
+    # TODO: - Add accuracy @1 @5
+
+    for epoch in range(20):
         running_loss = 0.0
+
         for i, (inputs, labels) in enumerate(loader_sup, 0):
             inputs = get_torch_vars(inputs)
 
@@ -70,7 +73,8 @@ def main():
             # ============ Logging ============
             running_loss += loss.data
             if i % 1000 == 999:
-                wandb.log({"Finetuning Loss": running_loss / 1000,
+                if args.wandb_on:
+                    wandb.log({"Finetuning Loss": running_loss / 1000,
                            "Epoch" : epoch + 1,
                            "Iteration" : i + 1,
                            })
@@ -103,7 +107,8 @@ def main():
                     imshow(torchvision.utils.make_grid(decoded_img.data))
 
             # ============ Logging ============
-            wandb.log({"Validation Loss": val_loss})
+            if args.wandb_on:
+                wandb.log({"Validation Loss": val_loss})
             print('[%d, %5d] Validation loss: %.3f' % (epoch + 1, j + 1, val_loss))
 
     exit(0)

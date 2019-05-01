@@ -1,0 +1,18 @@
+Traceback (most recent call last):
+  File "/Users/Caetius/Desktop/LeProject/DAE/pretrain.py", line 109, in <module>
+    main()
+  File "/Users/Caetius/Desktop/LeProject/DAE/pretrain.py", line 57, in main
+    ae = create_model("pretrain", pretrained_weight_name)
+  File "/Users/Caetius/Desktop/LeProject/DAE/utils.py", line 15, in create_model
+    pretrained_dict = torch.load(ckpt)
+  File "/anaconda3/envs/cpc/lib/python3.6/site-packages/torch/serialization.py", line 358, in load
+    return _load(f, map_location, pickle_module)
+  File "/anaconda3/envs/cpc/lib/python3.6/site-packages/torch/serialization.py", line 542, in _load
+    result = unpickler.load()
+  File "/anaconda3/envs/cpc/lib/python3.6/site-packages/torch/serialization.py", line 508, in persistent_load
+    data_type(size), location)
+  File "/anaconda3/envs/cpc/lib/python3.6/site-packages/torch/serialization.py", line 104, in default_restore_location
+    result = fn(storage, location)
+  File "/anaconda3/envs/cpc/lib/python3.6/site-packages/torch/serialization.py", line 75, in _cuda_deserialize
+    raise RuntimeError('Attempting to deserialize object on a CUDA '
+RuntimeError: Attempting to deserialize object on a CUDA device but torch.cuda.is_available() is False. If you are running on a CPU-only machine, please use torch.load with map_location='cpu' to map your storages to the CPU.

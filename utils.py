@@ -6,11 +6,18 @@ import torch
 from torch.autograd import Variable
 import numpy as np
 
+import os
+
 ''' Instantiate Model '''
-def create_model(model_type):
+def create_model(model_type, ckpt=None):
     # Create and print DAE
     if model_type == "pretrain":
         ae = Autoencoder()
+        if ckpt != None:
+            file_exists(ckpt)
+            print("Loading checkpoint ", ckpt)
+            pretrained_dict = torch.load(ckpt, map_location='cpu')
+            ae.load_state_dict(pretrained_dict)
         print_model("Encoder", ae.encoder, "Decoder", ae.decoder)
         if torch.cuda.is_available():
             ae = ae.cuda()
@@ -19,6 +26,11 @@ def create_model(model_type):
     # Create and print Classifier based on Pretrained DAE
     elif model_type == "classify":
         classifier = Classifier()
+        if ckpt != None:
+            file_exists(ckpt)
+            print("Loading checkpoint ", ckpt)
+            pretrained_dict = torch.load(ckpt, map_location='cpu')
+            classifier.ae.load_state_dict(pretrained_dict)
         print_model("Pretrained Encoder", classifier.ae.encoder, "Classifier", classifier.mlp)
         if torch.cuda.is_available():
             classifier = classifier.cuda()
@@ -41,6 +53,15 @@ def get_torch_vars(x):
     if torch.cuda.is_available():
         x = x.cuda()
     return Variable(x)
+
+'''Check if file exists'''
+def file_exists(filename):
+    if not os.path.isfile(filename):
+        raise Exception('The checkpoint file specified does not exist. \n'
+                        '(1) check the desired checkpoint name and location\n'
+                        '(2) disable ckpt_on (flag)')
+        exit(1)
+
 
 ''' Display Image '''
 def imshow(img):

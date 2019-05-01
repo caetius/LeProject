@@ -13,8 +13,6 @@ import argparse
 
 #WANDB
 import wandb
-wandb.init(project="le-project")
-
 
 # Set random seed for reproducibility
 ''' Set Random Seed '''
@@ -25,22 +23,23 @@ if torch.cuda.is_available():
     torch.cuda.manual_seed(SEED)
 
 def main():
-    wandb.init()
 
     # Parse Args
     parser = argparse.ArgumentParser(description="Train Denoising Autoencoder")
     parser.add_argument("--valid", '--do_validation',type=bool, default=False,
                         help="Perform validation only.", metavar='v')
-    parser.add_argument("--perc_noise", '-percentage_of_noise', type=float, default=0.05,
+    parser.add_argument("--perc_noise", '-percentage_of_noise', type=float, default=0.2,
                         help="Percentage of noise to add.", metavar='p')
-    parser.add_argument("--corr_type", '-type_of_noise', type=str, default="local_gauss",
+    parser.add_argument("--corr_type", '-type_of_noise', type=str, default="mask",
                         help="Percentage of noise to add.", metavar='c')
-    parser.add_argument("--verbose", '-verbose_mode', type=bool, default=False,
+    parser.add_argument("--verbose", '-verbose_mode', type=bool, default=True,
                         help="Show images as you feed them in, show reconstructions as they come out.", metavar='b')
     parser.add_argument("--wandb", '-name_of_wandb_proj', type=str, default="le-project",
-                        help="Name of WAND Project.", metavar='w')
+                        help="Name of WAND Project.", metavar='w1')
+    parser.add_argument("--wandb_on", '-is_wand_on', type=bool, default=True,
+                        help="Name of WAND Project.", metavar='w2')
     parser.add_argument("--ckpt_on", '-load_weights_from_ckpt', type=bool, default=False,
-                        help="Name of WAND Project.", metavar='w')
+                        help="Whether to log to w&b.", metavar='ckpt')
     args = parser.parse_args()
 
     ''' IMPORTANT: Name the weights such that there's no naming conflict between runs.'''
@@ -50,13 +49,15 @@ def main():
 
     pretrained_weight_name = os.path.join(file_path, "weights/%s/ae_%s.pkl" % (args.corr_type, str(args.perc_noise)))
 
-    wandb.config.update(args)
-
+    if args.wandb_on:
+        wandb.init(project=args.wandb)
+        wandb.config.update(args)
 
     # Create model
-    ae = create_model("pretrain")
     if args.ckpt_on:
-        ae.load_state_dict(pretrained_weight_name)
+        ae = create_model("pretrain", pretrained_weight_name)
+    else:
+        ae = create_model("pretrain")
 
     ''' Load data '''
     loader_sup, loader_val_sup, loader_unsup = nyu_image_loader("../ssl_data_96", 32)
@@ -65,7 +66,8 @@ def main():
     criterion = nn.BCELoss()
     optimizer = optim.Adam(ae.parameters())
 
-    wandb.watch(ae)
+    if args.wandb_on:
+        wandb.watch(ae)
 
     for epoch in range(40):
         running_loss = 0.0
@@ -73,6 +75,7 @@ def main():
             inputs = get_torch_vars(inputs)
             noised = corrupt_input(args.corr_type, inputs, args.perc_noise)
             noised = get_torch_vars(noised)
+            print("Iteration number: ", i)
 
             # ============ Forward ============
             encoded, outputs = ae(noised)
@@ -85,11 +88,13 @@ def main():
             if args.verbose:
                 imshow(inputs[0])
                 imshow(noised[0])
+                imshow(outputs[0].detach())
 
             # ============ Logging ============
             running_loss += loss.data
             if i % 2000 == 1999:
-                wandb.log({"Pretraining Loss": running_loss / 2000,
+                if args.wandb_on:
+                    wandb.log({"Pretraining Loss": running_loss / 2000,
                            "Epoch" : epoch + 1,
                            "Iteration" : i + 1,
                            })
