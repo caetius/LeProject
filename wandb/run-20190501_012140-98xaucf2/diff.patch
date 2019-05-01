@@ -1,0 +1,62 @@
+diff --git a/__pycache__/models.cpython-36.pyc b/__pycache__/models.cpython-36.pyc
+index a8f18c5..8e9318d 100644
+Binary files a/__pycache__/models.cpython-36.pyc and b/__pycache__/models.cpython-36.pyc differ
+diff --git a/wandb/debug.log b/wandb/debug.log
+index 8dbad99..e628432 100644
+--- a/wandb/debug.log
++++ b/wandb/debug.log
+@@ -1,38 +1,16 @@
+-2019-04-30 13:43:31,423 DEBUG   MainThread:51710 [wandb_config.py:_load_defaults():81] no defaults not found in config-defaults.yaml
+-2019-04-30 13:43:31,428 DEBUG   MainThread:51710 [cmd.py:execute():722] Popen(['git', 'cat-file', '--batch-check'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
+-2019-04-30 13:43:31,440 DEBUG   MainThread:51710 [cmd.py:execute():722] Popen(['git', 'rev-parse', '--show-toplevel'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
+-2019-04-30 13:43:31,461 DEBUG   MainThread:51710 [run_manager.py:__init__():452] Initialized sync for le-project/toi6ze4g
+-2019-04-30 13:43:31,464 INFO    MainThread:51710 [run_manager.py:wrap_existing_process():986] wrapping existing process 51705
+-2019-04-30 13:43:31,468 DEBUG   MainThread:51710 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): pypi.org:443
+-2019-04-30 13:43:31,508 DEBUG   MainThread:51710 [connectionpool.py:_make_request():393] https://pypi.org:443 "GET /pypi/wandb/json HTTP/1.1" 200 31060
+-2019-04-30 13:43:31,520 INFO    MainThread:51710 [run_manager.py:init_run():810] system metrics and metadata threads started
+-2019-04-30 13:43:31,520 INFO    MainThread:51710 [run_manager.py:init_run():844] upserting run before process can begin, waiting at most 10 seconds
+-2019-04-30 13:43:31,527 DEBUG   Thread-13 :51710 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): api.wandb.ai:443
+-2019-04-30 13:43:31,627 DEBUG   Thread-13 :51710 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 355
+-2019-04-30 13:43:31,631 INFO    Thread-13 :51710 [run_manager.py:_upsert_run():900] saving patches
+-2019-04-30 13:43:31,631 DEBUG   Thread-13 :51710 [cmd.py:execute():722] Popen(['git', 'rev-parse', '--show-toplevel'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
+-2019-04-30 13:43:31,643 DEBUG   Thread-13 :51710 [cmd.py:execute():722] Popen(['git', 'diff', '--cached', '--abbrev=40', '--full-index', '--raw'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
+-2019-04-30 13:43:31,655 DEBUG   Thread-13 :51710 [cmd.py:execute():722] Popen(['git', 'version'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
+-2019-04-30 13:43:31,689 INFO    Thread-13 :51710 [run_manager.py:_upsert_run():902] saving pip packages
+-2019-04-30 13:43:31,690 INFO    Thread-13 :51710 [run_manager.py:_upsert_run():904] initializing streaming files api
+-2019-04-30 13:43:31,690 INFO    Thread-13 :51710 [run_manager.py:_upsert_run():911] unblocking file change observer, beginning sync with W&B servers
+-2019-04-30 13:43:31,691 INFO    MainThread:51710 [run_manager.py:wrap_existing_process():1003] informing user process we are ready to proceed
+-2019-04-30 13:43:31,691 INFO    MainThread:51710 [run_manager.py:_sync_etc():1059] entering loop for messages from user process
+-2019-04-30 13:43:32,430 INFO    Thread-2  :51710 [run_manager.py:_on_file_created():576] file/dir created: /Users/Caetius/Desktop/LeProject/DAE/wandb/run-20190430_174330-toi6ze4g/diff.patch
+-2019-04-30 13:43:32,431 INFO    Thread-2  :51710 [run_manager.py:_on_file_created():576] file/dir created: /Users/Caetius/Desktop/LeProject/DAE/wandb/run-20190430_174330-toi6ze4g/config.yaml
+-2019-04-30 13:43:32,439 DEBUG   Thread-2  :51710 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): api.wandb.ai:443
+-2019-04-30 13:43:32,523 DEBUG   Thread-2  :51710 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 629
+-2019-04-30 13:43:32,526 INFO    Thread-2  :51710 [run_manager.py:_on_file_created():576] file/dir created: /Users/Caetius/Desktop/LeProject/DAE/wandb/run-20190430_174330-toi6ze4g/wandb-metadata.json
+-2019-04-30 13:43:32,526 INFO    Thread-2  :51710 [run_manager.py:_on_file_created():576] file/dir created: /Users/Caetius/Desktop/LeProject/DAE/wandb/run-20190430_174330-toi6ze4g/requirements.txt
+-2019-04-30 13:43:32,530 DEBUG   Thread-14 :51710 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): api.wandb.ai:443
+-2019-04-30 13:43:32,615 DEBUG   Thread-14 :51710 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 741
+-2019-04-30 13:43:32,620 DEBUG   Thread-14 :51710 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): storage.googleapis.com:443
+-2019-04-30 13:43:32,979 DEBUG   Thread-14 :51710 [connectionpool.py:_make_request():393] https://storage.googleapis.com:443 "PUT /wandb-production.appspot.com/dlc423/le-project/toi6ze4g/config.yaml?Expires=1556646272&GoogleAccessId=gorilla-cloud-storage%40wandb-production.iam.gserviceaccount.com&Signature=FkOmRFzf3bi0tz%2BfrRLaAqpVOpt7n%2F4bcQbJxf9kUNg5WquSQckByKcTP31NuNAaHVsAu6dpc3gl0NmHF0%2BTBuV57pc79I8tiwYTJk3ScGv0lpU3wXDzy1WYsJ1CI25KPKhAluNAg6ha7JcpNgkflrWDYQJoA69Cqh0QCuS5Sx3Ke40lAXe8oWaKW49ZdbgGwqpk7KZR8buealyvAfafVQwvkkLWATx9l34Lcyj4%2FDRTFe8uZJTT%2BnRMN2cllcaJS2MD7uINFjtuS9XoEwnd3zVtGPZWdovjZTX0dDq4iaMEl%2Fx4ftpmk9dOk5DSsj6dcE7xEIYNsP3d4%2Fq4fPmgVQ%3D%3D HTTP/1.1" 200 0
+-2019-04-30 13:43:33,703 DEBUG   Thread-6  :51710 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): api.wandb.ai:443
+-2019-04-30 13:43:33,814 DEBUG   Thread-6  :51710 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/toi6ze4g/file_stream HTTP/1.1" 200 312
+-2019-04-30 13:43:35,434 INFO    Thread-2  :51710 [run_manager.py:_on_file_created():576] file/dir created: /Users/Caetius/Desktop/LeProject/DAE/wandb/run-20190430_174330-toi6ze4g/wandb-history.jsonl
+-2019-04-30 13:43:39,874 INFO    MainThread:51710 [run_manager.py:_sync_etc():1110] process received interrupt signal, shutting down
+-2019-04-30 13:43:39,875 INFO    MainThread:51710 [run_manager.py:_sync_etc():1163] closing log streams and sending exitcode to W&B
+-2019-04-30 13:43:39,876 INFO    MainThread:51710 [run_manager.py:shutdown():918] shutting down system stats and metadata service
+-2019-04-30 13:43:39,954 DEBUG   Thread-6  :51710 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/toi6ze4g/file_stream HTTP/1.1" 200 312
+-n():918] shutting down system stats and metadata service
++2019-04-30 21:21:41,691 DEBUG   MainThread:63622 [wandb_config.py:_load_defaults():81] no defaults not found in config-defaults.yaml
++2019-04-30 21:21:41,696 DEBUG   MainThread:63622 [cmd.py:execute():722] Popen(['git', 'cat-file', '--batch-check'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
++2019-04-30 21:21:41,707 DEBUG   MainThread:63622 [cmd.py:execute():722] Popen(['git', 'rev-parse', '--show-toplevel'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
++2019-04-30 21:21:41,729 DEBUG   MainThread:63622 [run_manager.py:__init__():452] Initialized sync for le-project/98xaucf2
++2019-04-30 21:21:41,733 INFO    MainThread:63622 [run_manager.py:wrap_existing_process():986] wrapping existing process 63617
++2019-04-30 21:21:41,760 DEBUG   MainThread:63622 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): pypi.org:443
++2019-04-30 21:21:41,809 DEBUG   MainThread:63622 [connectionpool.py:_make_request():393] https://pypi.org:443 "GET /pypi/wandb/json HTTP/1.1" 200 31060
++2019-04-30 21:21:41,822 INFO    MainThread:63622 [run_manager.py:init_run():810] system metrics and metadata threads started
++2019-04-30 21:21:41,822 INFO    MainThread:63622 [run_manager.py:init_run():844] upserting run before process can begin, waiting at most 10 seconds
++2019-04-30 21:21:41,831 DEBUG   Thread-13 :63622 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): api.wandb.ai:443
++2019-04-30 21:21:41,927 DEBUG   Thread-13 :63622 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 358
++2019-04-30 21:21:41,931 INFO    Thread-13 :63622 [run_manager.py:_upsert_run():900] saving patches
++2019-04-30 21:21:41,931 DEBUG   Thread-13 :63622 [cmd.py:execute():722] Popen(['git', 'rev-parse', '--show-toplevel'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
++2019-04-30 21:21:41,944 DEBUG   Thread-13 :63622 [cmd.py:execute():722] Popen(['git', 'diff', '--cached', '--abbrev=40', '--full-index', '--raw'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
++2019-04-30 21:21:41,955 DEBUG   Thread-13 :63622 [cmd.py:execute():722] Popen(['git', 'diff', '--abbrev=40', '--full-index', '--raw'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
++2019-04-30 21:21:41,967 DEBUG   Thread-13 :63622 [cmd.py:execute():722] Popen(['git', 'version'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)

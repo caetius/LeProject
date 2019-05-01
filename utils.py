@@ -19,7 +19,7 @@ def create_model(model_type):
     # Create and print Classifier based on Pretrained DAE
     elif model_type == "classify":
         classifier = Classifier()
-        print_model("Pretrained Encoder", classifier.ae.encoder, "Classifier", classifier.mlp, final=classifier.softmax)
+        print_model("Pretrained Encoder", classifier.ae.encoder, "Classifier", classifier.mlp)
         if torch.cuda.is_available():
             classifier = classifier.cuda()
             print("Model moved to GPU in order to speed up training.")

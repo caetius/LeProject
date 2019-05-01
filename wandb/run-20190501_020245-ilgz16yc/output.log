@@ -1,0 +1,30 @@
+/Users/Caetius/Desktop/LeProject/DAE
+Traceback (most recent call last):
+  File "_pydevd_bundle/pydevd_cython_darwin_36_64.pyx", line 749, in _pydevd_bundle.pydevd_cython_darwin_36_64.PyDBFrame.trace_dispatch
+  File "_pydevd_bundle/pydevd_cython_darwin_36_64.pyx", line 254, in _pydevd_bundle.pydevd_cython_darwin_36_64.PyDBFrame.do_wait_suspend
+  File "/Applications/PyCharm.app/Contents/helpers/pydev/pydevd.py", line 812, in do_wait_suspend
+    time.sleep(0.01)
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/Applications/PyCharm.app/Contents/helpers/pydev/pydevd.py", line 1664, in <module>
+    main()
+  File "/Applications/PyCharm.app/Contents/helpers/pydev/pydevd.py", line 1658, in main
+    globals = debugger.run(setup['file'], None, None, is_module)
+  File "/Applications/PyCharm.app/Contents/helpers/pydev/pydevd.py", line 1068, in run
+    pydev_imports.execfile(file, globals, locals)  # execute the script
+  File "/Applications/PyCharm.app/Contents/helpers/pydev/_pydev_imps/_pydev_execfile.py", line 18, in execfile
+    exec(compile(contents+"\n", file, 'exec'), glob, loc)
+  File "/Users/Caetius/Desktop/LeProject/DAE/pretrain.py", line 108, in <module>
+    main()
+  File "/Users/Caetius/Desktop/LeProject/DAE/pretrain.py", line 49, in main
+    pretrained_weight_name = os.join(file_path, "./weights/%s/ae_%d.pkl" % (args.corr_type, args.perc_noise))
+  File "/Users/Caetius/Desktop/LeProject/DAE/pretrain.py", line 49, in main
+    pretrained_weight_name = os.join(file_path, "./weights/%s/ae_%d.pkl" % (args.corr_type, args.perc_noise))
+  File "_pydevd_bundle/pydevd_cython_darwin_36_64.pyx", line 968, in _pydevd_bundle.pydevd_cython_darwin_36_64.SafeCallWrapper.__call__
+  File "_pydevd_bundle/pydevd_cython_darwin_36_64.pyx", line 515, in _pydevd_bundle.pydevd_cython_darwin_36_64.PyDBFrame.trace_dispatch
+  File "_pydevd_bundle/pydevd_cython_darwin_36_64.pyx", line 758, in _pydevd_bundle.pydevd_cython_darwin_36_64.PyDBFrame.trace_dispatch
+  File "_pydevd_bundle/pydevd_cython_darwin_36_64.pyx", line 749, in _pydevd_bundle.pydevd_cython_darwin_36_64.PyDBFrame.trace_dispatch
+  File "_pydevd_bundle/pydevd_cython_darwin_36_64.pyx", line 254, in _pydevd_bundle.pydevd_cython_darwin_36_64.PyDBFrame.do_wait_suspend
+  File "/Applications/PyCharm.app/Contents/helpers/pydev/pydevd.py", line 812, in do_wait_suspend
+    time.sleep(0.01)
+KeyboardInterrupt

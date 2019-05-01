@@ -27,8 +27,9 @@ def main():
     args = parser.parse_args()
 
     ''' IMPORTANT: Name the weights such that there's no naming conflict between runs.'''
-    pretrained_weight_name = "./weights/%s/ae_%d.pkl" % (args.corr_type, args.perc_noise)
-    finetuned_weight_name = "./weights/%s/ae_finetuned_%d.pkl" % (args.corr_type, args.perc_noise)
+    file_path = os.path.dirname(os.path.abspath(__file__))
+    pretrained_weight_name = os.path.join(file_path, "weights/%s/ae_%s.pkl" % (args.corr_type, str(args.perc_noise)))
+    finetuned_weight_name = os.path.join(file_path,"weights/%s/ae_finetuned_%s.pkl" % (args.corr_type, str(args.perc_noise)))
 
     wandb.config.update(args)
 
@@ -74,8 +75,8 @@ def main():
 
         ''' Save Trained Model '''
         print('Done Training. Saving Model...')
-        if not os.path.exists('./weights/%s' % args.corr_type):
-            os.mkdir('./weights/%s' % args.corr_type)
+        if not os.path.exists(os.path.join(file_path,'weights/%s' % args.corr_type)):
+            os.mkdir(os.path.join(file_path,'weights/%s' % args.corr_type))
         torch.save(classifier.state_dict(), finetuned_weight_name)
 
         ''' Do Validation: After every epoch to check for overfitting '''
@@ -101,9 +102,6 @@ def main():
             print('[%d, %5d] Validation loss: %.3f' % (epoch + 1, j + 1, val_loss))
 
     exit(0)
-
-
-
 
 if __name__ == '__main__':
     main()

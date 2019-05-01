@@ -44,13 +44,16 @@ def main():
     args = parser.parse_args()
 
     ''' IMPORTANT: Name the weights such that there's no naming conflict between runs.'''
-    pretrained_weight_name = "./weights/%s/ae_%d.pkl" % (args.corr_type, args.perc_noise)
+    file_path = os.path.dirname(os.path.abspath(__file__))
+    pretrained_weight_name = os.path.join(file_path, "weights/%s/ae_%s.pkl" % (args.corr_type, str(args.perc_noise)))
 
     wandb.config.update(args)
 
 
     # Create model
     ae = create_model("pretrain")
+    if args.ckpt_on:
+        ae.load_state_dict(pretrained_weight_name)
 
     ''' Load data '''
     loader_sup, loader_val_sup, loader_unsup = nyu_image_loader("../ssl_data_96", 32)
@@ -61,7 +64,7 @@ def main():
 
     wandb.watch(ae)
 
-    for epoch in range(30):
+    for epoch in range(40):
         running_loss = 0.0
         for i, (inputs, _) in enumerate(loader_unsup, 0):
             inputs = get_torch_vars(inputs)
@@ -93,8 +96,8 @@ def main():
 
         ''' Save Trained Model '''
         print('Saving Model after epoch ', epoch)
-        if not os.path.exists('./weights/%s' % args.corr_type):
-            os.mkdir('./weights/%s' % args.corr_type)
+        if not os.path.exists(os.path.join(file_path,'weights/%s' % args.corr_type)):
+            os.mkdir(os.path.join(file_path,'weights/%s' % args.corr_type))
         torch.save(ae.state_dict(), pretrained_weight_name)
 
     exit(0)

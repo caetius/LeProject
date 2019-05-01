@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/Users/Caetius/Desktop/LeProject/DAE/classify.py", line 107, in <module>
+    main()
+  File "/Users/Caetius/Desktop/LeProject/DAE/classify.py", line 38, in main
+    classifier = create_model("classify")
+  File "/Users/Caetius/Desktop/LeProject/DAE/utils.py", line 22, in create_model
+    print_model("Pretrained Encoder", classifier.ae.encoder, "Classifier", classifier.mlp, final=classifier.softmax)
+  File "/anaconda3/envs/cpc/lib/python3.6/site-packages/torch/nn/modules/module.py", line 518, in __getattr__
+    type(self).__name__, name))
+AttributeError: 'Classifier' object has no attribute 'softmax'

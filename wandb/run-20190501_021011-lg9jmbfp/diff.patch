@@ -1,0 +1,161 @@
+diff --git a/.DS_Store b/.DS_Store
+index dc2f562..c310d6f 100644
+Binary files a/.DS_Store and b/.DS_Store differ
+diff --git a/__pycache__/models.cpython-36.pyc b/__pycache__/models.cpython-36.pyc
+index a8f18c5..8e9318d 100644
+Binary files a/__pycache__/models.cpython-36.pyc and b/__pycache__/models.cpython-36.pyc differ
+diff --git a/__pycache__/utils.cpython-36.pyc b/__pycache__/utils.cpython-36.pyc
+index ab5bcf3..12fcab0 100644
+Binary files a/__pycache__/utils.cpython-36.pyc and b/__pycache__/utils.cpython-36.pyc differ
+diff --git a/classify.py b/classify.py
+index 49d6b2b..72efc99 100644
+--- a/classify.py
++++ b/classify.py
+@@ -27,8 +27,9 @@ def main():
+     args = parser.parse_args()
+ 
+     ''' IMPORTANT: Name the weights such that there's no naming conflict between runs.'''
+-    pretrained_weight_name = "./weights/%s/ae_%d.pkl" % (args.corr_type, args.perc_noise)
+-    finetuned_weight_name = "./weights/%s/ae_finetuned_%d.pkl" % (args.corr_type, args.perc_noise)
++    file_path = os.path.dirname(os.path.abspath(__file__))
++    pretrained_weight_name = os.path.join(file_path, "weights/%s/ae_%d.pkl" % (args.corr_type, args.perc_noise))
++    finetuned_weight_name = os.path.join(file_path,"weights/%s/ae_finetuned_%f.pkl" % (args.corr_type, args.perc_noise))
+ 
+     wandb.config.update(args)
+ 
+@@ -74,8 +75,8 @@ def main():
+ 
+         ''' Save Trained Model '''
+         print('Done Training. Saving Model...')
+-        if not os.path.exists('./weights/%s' % args.corr_type):
+-            os.mkdir('./weights/%s' % args.corr_type)
++        if not os.path.exists(os.path.join(file_path,'weights/%s' % args.corr_type)):
++            os.mkdir(os.path.join(file_path,'weights/%s' % args.corr_type))
+         torch.save(classifier.state_dict(), finetuned_weight_name)
+ 
+         ''' Do Validation: After every epoch to check for overfitting '''
+@@ -102,8 +103,5 @@ def main():
+ 
+     exit(0)
+ 
+-
+-
+-
+ if __name__ == '__main__':
+     main()
+diff --git a/pretrain.py b/pretrain.py
+index 1319c76..562226b 100644
+--- a/pretrain.py
++++ b/pretrain.py
+@@ -44,13 +44,16 @@ def main():
+     args = parser.parse_args()
+ 
+     ''' IMPORTANT: Name the weights such that there's no naming conflict between runs.'''
+-    pretrained_weight_name = "./weights/%s/ae_%d.pkl" % (args.corr_type, args.perc_noise)
++    file_path = os.path.dirname(os.path.abspath(__file__))
++    pretrained_weight_name = os.path.join(file_path, "weights/%s/ae_%d.pkl" % (args.corr_type, args.perc_noise))
+ 
+     wandb.config.update(args)
+ 
+ 
+     # Create model
+     ae = create_model("pretrain")
++    if args.ckpt_on:
++        ae.load_state_dict(pretrained_weight_name)
+ 
+     ''' Load data '''
+     loader_sup, loader_val_sup, loader_unsup = nyu_image_loader("../ssl_data_96", 32)
+@@ -61,7 +64,7 @@ def main():
+ 
+     wandb.watch(ae)
+ 
+-    for epoch in range(30):
++    for epoch in range(40):
+         running_loss = 0.0
+         for i, (inputs, _) in enumerate(loader_unsup, 0):
+             inputs = get_torch_vars(inputs)
+@@ -93,8 +96,8 @@ def main():
+ 
+         ''' Save Trained Model '''
+         print('Saving Model after epoch ', epoch)
+-        if not os.path.exists('./weights/%s' % args.corr_type):
+-            os.mkdir('./weights/%s' % args.corr_type)
++        if not os.path.exists(os.path.join(file_path,'weights/%s' % args.corr_type)):
++            os.mkdir(os.path.join(file_path,'weights/%s' % args.corr_type))
+         torch.save(ae.state_dict(), pretrained_weight_name)
+ 
+     exit(0)
+diff --git a/utils.py b/utils.py
+index c59144c..1a8fc49 100644
+--- a/utils.py
++++ b/utils.py
+@@ -19,7 +19,7 @@ def create_model(model_type):
+     # Create and print Classifier based on Pretrained DAE
+     elif model_type == "classify":
+         classifier = Classifier()
+-        print_model("Pretrained Encoder", classifier.ae.encoder, "Classifier", classifier.mlp, final=classifier.softmax)
++        print_model("Pretrained Encoder", classifier.ae.encoder, "Classifier", classifier.mlp)
+         if torch.cuda.is_available():
+             classifier = classifier.cuda()
+             print("Model moved to GPU in order to speed up training.")
+diff --git a/wandb/debug.log b/wandb/debug.log
+index 8dbad99..02edd71 100644
+--- a/wandb/debug.log
++++ b/wandb/debug.log
+@@ -1,38 +1,18 @@
+-2019-04-30 13:43:31,423 DEBUG   MainThread:51710 [wandb_config.py:_load_defaults():81] no defaults not found in config-defaults.yaml
+-2019-04-30 13:43:31,428 DEBUG   MainThread:51710 [cmd.py:execute():722] Popen(['git', 'cat-file', '--batch-check'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
+-2019-04-30 13:43:31,440 DEBUG   MainThread:51710 [cmd.py:execute():722] Popen(['git', 'rev-parse', '--show-toplevel'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
+-2019-04-30 13:43:31,461 DEBUG   MainThread:51710 [run_manager.py:__init__():452] Initialized sync for le-project/toi6ze4g
+-2019-04-30 13:43:31,464 INFO    MainThread:51710 [run_manager.py:wrap_existing_process():986] wrapping existing process 51705
+-2019-04-30 13:43:31,468 DEBUG   MainThread:51710 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): pypi.org:443
+-2019-04-30 13:43:31,508 DEBUG   MainThread:51710 [connectionpool.py:_make_request():393] https://pypi.org:443 "GET /pypi/wandb/json HTTP/1.1" 200 31060
+-2019-04-30 13:43:31,520 INFO    MainThread:51710 [run_manager.py:init_run():810] system metrics and metadata threads started
+-2019-04-30 13:43:31,520 INFO    MainThread:51710 [run_manager.py:init_run():844] upserting run before process can begin, waiting at most 10 seconds
+-2019-04-30 13:43:31,527 DEBUG   Thread-13 :51710 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): api.wandb.ai:443
+-2019-04-30 13:43:31,627 DEBUG   Thread-13 :51710 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 355
+-2019-04-30 13:43:31,631 INFO    Thread-13 :51710 [run_manager.py:_upsert_run():900] saving patches
+-2019-04-30 13:43:31,631 DEBUG   Thread-13 :51710 [cmd.py:execute():722] Popen(['git', 'rev-parse', '--show-toplevel'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
+-2019-04-30 13:43:31,643 DEBUG   Thread-13 :51710 [cmd.py:execute():722] Popen(['git', 'diff', '--cached', '--abbrev=40', '--full-index', '--raw'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
+-2019-04-30 13:43:31,655 DEBUG   Thread-13 :51710 [cmd.py:execute():722] Popen(['git', 'version'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
+-2019-04-30 13:43:31,689 INFO    Thread-13 :51710 [run_manager.py:_upsert_run():902] saving pip packages
+-2019-04-30 13:43:31,690 INFO    Thread-13 :51710 [run_manager.py:_upsert_run():904] initializing streaming files api
+-2019-04-30 13:43:31,690 INFO    Thread-13 :51710 [run_manager.py:_upsert_run():911] unblocking file change observer, beginning sync with W&B servers
+-2019-04-30 13:43:31,691 INFO    MainThread:51710 [run_manager.py:wrap_existing_process():1003] informing user process we are ready to proceed
+-2019-04-30 13:43:31,691 INFO    MainThread:51710 [run_manager.py:_sync_etc():1059] entering loop for messages from user process
+-2019-04-30 13:43:32,430 INFO    Thread-2  :51710 [run_manager.py:_on_file_created():576] file/dir created: /Users/Caetius/Desktop/LeProject/DAE/wandb/run-20190430_174330-toi6ze4g/diff.patch
+-2019-04-30 13:43:32,431 INFO    Thread-2  :51710 [run_manager.py:_on_file_created():576] file/dir created: /Users/Caetius/Desktop/LeProject/DAE/wandb/run-20190430_174330-toi6ze4g/config.yaml
+-2019-04-30 13:43:32,439 DEBUG   Thread-2  :51710 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): api.wandb.ai:443
+-2019-04-30 13:43:32,523 DEBUG   Thread-2  :51710 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 629
+-2019-04-30 13:43:32,526 INFO    Thread-2  :51710 [run_manager.py:_on_file_created():576] file/dir created: /Users/Caetius/Desktop/LeProject/DAE/wandb/run-20190430_174330-toi6ze4g/wandb-metadata.json
+-2019-04-30 13:43:32,526 INFO    Thread-2  :51710 [run_manager.py:_on_file_created():576] file/dir created: /Users/Caetius/Desktop/LeProject/DAE/wandb/run-20190430_174330-toi6ze4g/requirements.txt
+-2019-04-30 13:43:32,530 DEBUG   Thread-14 :51710 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): api.wandb.ai:443
+-2019-04-30 13:43:32,615 DEBUG   Thread-14 :51710 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 741
+-2019-04-30 13:43:32,620 DEBUG   Thread-14 :51710 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): storage.googleapis.com:443
+-2019-04-30 13:43:32,979 DEBUG   Thread-14 :51710 [connectionpool.py:_make_request():393] https://storage.googleapis.com:443 "PUT /wandb-production.appspot.com/dlc423/le-project/toi6ze4g/config.yaml?Expires=1556646272&GoogleAccessId=gorilla-cloud-storage%40wandb-production.iam.gserviceaccount.com&Signature=FkOmRFzf3bi0tz%2BfrRLaAqpVOpt7n%2F4bcQbJxf9kUNg5WquSQckByKcTP31NuNAaHVsAu6dpc3gl0NmHF0%2BTBuV57pc79I8tiwYTJk3ScGv0lpU3wXDzy1WYsJ1CI25KPKhAluNAg6ha7JcpNgkflrWDYQJoA69Cqh0QCuS5Sx3Ke40lAXe8oWaKW49ZdbgGwqpk7KZR8buealyvAfafVQwvkkLWATx9l34Lcyj4%2FDRTFe8uZJTT%2BnRMN2cllcaJS2MD7uINFjtuS9XoEwnd3zVtGPZWdovjZTX0dDq4iaMEl%2Fx4ftpmk9dOk5DSsj6dcE7xEIYNsP3d4%2Fq4fPmgVQ%3D%3D HTTP/1.1" 200 0
+-2019-04-30 13:43:33,703 DEBUG   Thread-6  :51710 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): api.wandb.ai:443
+-2019-04-30 13:43:33,814 DEBUG   Thread-6  :51710 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/toi6ze4g/file_stream HTTP/1.1" 200 312
+-2019-04-30 13:43:35,434 INFO    Thread-2  :51710 [run_manager.py:_on_file_created():576] file/dir created: /Users/Caetius/Desktop/LeProject/DAE/wandb/run-20190430_174330-toi6ze4g/wandb-history.jsonl
+-2019-04-30 13:43:39,874 INFO    MainThread:51710 [run_manager.py:_sync_etc():1110] process received interrupt signal, shutting down
+-2019-04-30 13:43:39,875 INFO    MainThread:51710 [run_manager.py:_sync_etc():1163] closing log streams and sending exitcode to W&B
+-2019-04-30 13:43:39,876 INFO    MainThread:51710 [run_manager.py:shutdown():918] shutting down system stats and metadata service
+-2019-04-30 13:43:39,954 DEBUG   Thread-6  :51710 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/toi6ze4g/file_stream HTTP/1.1" 200 312
+-n():918] shutting down system stats and metadata service
++2019-04-30 22:10:12,029 DEBUG   MainThread:65831 [wandb_config.py:_load_defaults():81] no defaults not found in config-defaults.yaml
++2019-04-30 22:10:12,032 DEBUG   MainThread:65831 [cmd.py:execute():722] Popen(['git', 'rev-parse', '--show-toplevel'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
++2019-04-30 22:10:12,052 DEBUG   MainThread:65831 [cmd.py:execute():722] Popen(['git', 'cat-file', '--batch-check'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
++2019-04-30 22:10:12,068 DEBUG   MainThread:65831 [cmd.py:execute():722] Popen(['git', 'rev-parse', '--show-toplevel'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
++2019-04-30 22:10:12,090 DEBUG   MainThread:65831 [run_manager.py:__init__():452] Initialized sync for DAE/lg9jmbfp
++2019-04-30 22:10:12,094 INFO    MainThread:65831 [run_manager.py:wrap_existing_process():986] wrapping existing process 65825
++2019-04-30 22:10:12,111 DEBUG   MainThread:65831 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): pypi.org:443
++2019-04-30 22:10:12,151 DEBUG   MainThread:65831 [connectionpool.py:_make_request():393] https://pypi.org:443 "GET /pypi/wandb/json HTTP/1.1" 200 31060
++2019-04-30 22:10:12,162 INFO    MainThread:65831 [run_manager.py:init_run():810] system metrics and metadata threads started
++2019-04-30 22:10:12,162 INFO    MainThread:65831 [run_manager.py:init_run():844] upserting run before process can begin, waiting at most 10 seconds
++2019-04-30 22:10:12,163 DEBUG   Thread-13 :65831 [cmd.py:execute():722] Popen(['git', 'rev-parse', '--show-toplevel'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
++2019-04-30 22:10:12,186 DEBUG   Thread-13 :65831 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): api.wandb.ai:443
++2019-04-30 22:10:12,298 DEBUG   Thread-13 :65831 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 327
++2019-04-30 22:10:12,303 INFO    Thread-13 :65831 [run_manager.py:_upsert_run():900] saving patches
++2019-04-30 22:10:12,303 DEBUG   Thread-13 :65831 [cmd.py:execute():722] Popen(['git', 'rev-parse', '--show-toplevel'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
++2019-04-30 22:10:12,315 DEBUG   Thread-13 :65831 [cmd.py:execute():722] Popen(['git', 'diff', '--cached', '--abbrev=40', '--full-index', '--raw'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
++2019-04-30 22:10:12,330 DEBUG   Thread-13 :65831 [cmd.py:execute():722] Popen(['git', 'diff', '--abbrev=40', '--full-index', '--raw'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
++2019-04-30 22:10:12,345 DEBUG   Thread-13 :65831 [cmd.py:execute():722] Popen(['git', 'version'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
