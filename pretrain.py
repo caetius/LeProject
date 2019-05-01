@@ -58,6 +58,7 @@ def main():
         ae = create_model("pretrain", pretrained_weight_name)
     else:
         ae = create_model("pretrain")
+    ae.train()
 
     ''' Load data '''
     loader_sup, loader_val_sup, loader_unsup = nyu_image_loader("../ssl_data_96", 32)
@@ -68,6 +69,7 @@ def main():
 
     if args.wandb_on:
         wandb.watch(ae)
+
 
     for epoch in range(40):
         running_loss = 0.0

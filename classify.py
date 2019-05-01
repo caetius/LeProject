@@ -32,7 +32,7 @@ def main():
     pretrained_weight_name = os.path.join(file_path, "weights/%s/ae_%s.pkl" % (args.corr_type, str(args.perc_noise)))
     finetuned_weight_name = os.path.join(file_path,"weights/%s/ae_finetuned_%s.pkl" % (args.corr_type, str(args.perc_noise)))
 
-    if not os.path.exists(os.path.join(file_path, "weights")) or os.path.join(file_path, "weights/%s/ae_%s.pkl" % (args.corr_type, str(args.perc_noise))):
+    if not (os.path.exists(os.path.join(file_path, "weights")) or os.path.join(file_path, "weights/%s/ae_%s.pkl" % (args.corr_type, str(args.perc_noise)))):
         raise Exception('Your pretrained weights folder is missing')
         exit(1)
 
@@ -54,10 +54,10 @@ def main():
     if args.wandb_on:
         wandb.watch(classifier)
 
-    # TODO: - Add accuracy @1 @5
-
     for epoch in range(20):
         running_loss = 0.0
+
+        classifier.train()
 
         for i, (inputs, labels) in enumerate(loader_sup, 0):
             inputs = get_torch_vars(inputs)
@@ -90,26 +90,46 @@ def main():
 
         ''' Do Validation: After every epoch to check for overfitting '''
         if args.valid:
-
+            classifier.eval()
             val_loss = 0
+            n_samples = 0.
+            n_correct_top_1 = 0
+            n_correct_top_k = 0
 
-            for j, (img, label) in enumerate(loader_val_sup, 0):
+            for j, (img, target) in enumerate(loader_val_sup, 0):
                 inputs = get_torch_vars(inputs)
+                batch_size = img.size(0)
+                n_samples += batch_size
 
                 # ============ Forward ============
-                decoded_val, out_val = classifier(img)
-                next_loss = criterion(out_val, label)
+                output = classifier(img)
+                next_loss = criterion(output, label)
                 val_loss += next_loss
-                # ============ Verbose ============
-                if args.verbose:
-                    decoded_img = decoded_val[1]
-                    imshow(torchvision.utils.make_grid(img))
-                    imshow(torchvision.utils.make_grid(decoded_img.data))
+
+                # ============ Accuracy ============
+                # Top 1 accuracy
+                pred_top_1 = torch.topk(output, k=1, dim=1)[1]
+                n_correct_top_1 += pred_top_1.eq(target.view_as(pred_top_1)).int().sum().item()
+
+                # Top k accuracy
+                top_k = 5
+                pred_top_k = torch.topk(output, k=top_k, dim=1)[1]
+                target_top_k = target.view(-1, 1).expand(batch_size, top_k)
+                n_correct_top_k += pred_top_k.eq(target_top_k).int().sum().item()
+
+            # Accuracy
+            top_1_acc = n_correct_top_1 / n_samples
+            top_k_acc = n_correct_top_k / n_samples
 
             # ============ Logging ============
+            split = 'Validation'
             if args.wandb_on:
-                wandb.log({"Validation Loss": val_loss})
+                wandb.log({"Validation Loss": val_loss,
+                           "Top-1 Accuracy": top_1_acc,
+                           "Top-5 Accuracy": top_5_acc})
             print('[%d, %5d] Validation loss: %.3f' % (epoch + 1, j + 1, val_loss))
+            print(f'{split} top 1 accuracy: {top_1_acc:.4f}')
+            print(f'{split} top {top_k} accuracy: {top_k_acc:.4f}')
 
     exit(0)
 
