@@ -7,9 +7,6 @@ from load_data import *
 from noise import corrupt_input
 from utils import *
 
-# Torchvision
-import torchvision
-
 # OS
 import os
 import argparse
@@ -42,7 +39,12 @@ def main():
                         help="Show images as you feed them in, show reconstructions as they come out.", metavar='b')
     parser.add_argument("--wandb", '-name_of_wandb_proj', type=str, default="le-project",
                         help="Name of WAND Project.", metavar='w')
+    parser.add_argument("--ckpt_on", '-load_weights_from_ckpt', type=bool, default=False,
+                        help="Name of WAND Project.", metavar='w')
     args = parser.parse_args()
+
+    ''' IMPORTANT: Name the weights such that there's no naming conflict between runs.'''
+    pretrained_weight_name = "./weights/%s/ae_%d.pkl" % (args.corr_type, args.perc_noise)
 
     wandb.config.update(args)
 
@@ -81,7 +83,7 @@ def main():
             # ============ Logging ============
             running_loss += loss.data
             if i % 2000 == 1999:
-                wandb.log({"Training Loss": running_loss / 2000,
+                wandb.log({"Pretraining Loss": running_loss / 2000,
                            "Epoch" : epoch + 1,
                            "Iteration" : i + 1,
                            })
@@ -91,24 +93,11 @@ def main():
 
         ''' Save Trained Model '''
         print('Saving Model after epoch ', epoch)
-        if not os.path.exists('./weights'):
-            os.mkdir('./weights')
-        torch.save(ae.state_dict(), "./weights/ae.pkl")
+        if not os.path.exists('./weights/%s' % args.corr_type):
+            os.mkdir('./weights/%s' % args.corr_type)
+        torch.save(ae.state_dict(), pretrained_weight_name)
 
-    ''' Do Validation '''
-    if args.valid:
-        print("Loading checkpoint...")
-        ae.load_state_dict(torch.load("./weights/ae.pkl"))
-        dataiter = iter(loader_val_sup)
-        images, labels = dataiter.next()
-        # print('GroundTruth: ', ' '.join('%5s' % classes[labels[j]] for j in range(16)))
-        images = Variable(images.cuda())
-        decoded_imgs = ae(images)[1]
-        if args.verbose:
-            imshow(torchvision.utils.make_grid(images))
-            imshow(torchvision.utils.make_grid(decoded_imgs.data))
-
-        exit(0)
+    exit(0)
 
 
 if __name__ == '__main__':

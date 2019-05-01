@@ -26,29 +26,36 @@ def main():
                         help="Name of WAND Project.", metavar='w')
     args = parser.parse_args()
 
+    ''' IMPORTANT: Name the weights such that there's no naming conflict between runs.'''
+    pretrained_weight_name = "./weights/%s/ae_%d.pkl" % (args.corr_type, args.perc_noise)
+    finetuned_weight_name = "./weights/%s/ae_finetuned_%d.pkl" % (args.corr_type, args.perc_noise)
+
     wandb.config.update(args)
 
 
     # Create model
     classifier = create_model("classify")
 
+    # Load pretrained weights
+    classifier.ae.load_state_dict(torch.load(pretrained_weight_name))
+
     ''' Load data '''
     loader_sup, loader_val_sup, loader_unsup = nyu_image_loader("../ssl_data_96", 32)
 
     # Define an optimizer and criterion
-    criterion = nn.MSELoss() # TODO: - Find something better
+    criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(classifier.parameters())
 
     wandb.watch(classifier)
 
     for epoch in range(100):
         running_loss = 0.0
-        for i, (inputs, _) in enumerate(loader_sup, 0):
+        for i, (inputs, labels) in enumerate(loader_sup, 0):
             inputs = get_torch_vars(inputs)
 
             # ============ Forward ============
-            encoded, outputs = classifier(inputs)
-            loss = criterion(outputs, inputs)
+            out = classifier(inputs)
+            loss = criterion(out, labels)
             # ============ Backward ============
             optimizer.zero_grad()
             loss.backward()
@@ -56,34 +63,46 @@ def main():
 
             # ============ Logging ============
             running_loss += loss.data
-            if i % 2000 == 1999:
-                wandb.log({"Validation Loss": running_loss / 2000,
+            if i % 1000 == 999:
+                wandb.log({"Finetuning Loss": running_loss / 1000,
                            "Epoch" : epoch + 1,
-                           "Iteration" : i+1,
+                           "Iteration" : i + 1,
                            })
                 print('[%d, %5d] loss: %.3f' %
-                      (epoch + 1, i + 1, running_loss / 2000))
+                      (epoch + 1, i + 1, running_loss / 1000))
                 running_loss = 0.0
 
-    ''' Save Trained Model '''
-    print('Done Training. Saving Model...')
-    if not os.path.exists('./weights'):
-        os.mkdir('./weights')
-    torch.save(classifier.state_dict(), "./weights/ae.pkl")
+        ''' Save Trained Model '''
+        print('Done Training. Saving Model...')
+        if not os.path.exists('./weights/%s' % args.corr_type):
+            os.mkdir('./weights/%s' % args.corr_type)
+        torch.save(classifier.state_dict(), finetuned_weight_name)
+
+        ''' Do Validation: After every epoch to check for overfitting '''
+        if args.valid:
+
+            val_loss = 0
+
+            for j, (img, label) in enumerate(loader_val_sup, 0):
+                inputs = get_torch_vars(inputs)
+
+                # ============ Forward ============
+                decoded_val, out_val = classifier(img)
+                next_loss = criterion(out_val, label)
+                val_loss += next_loss
+                # ============ Verbose ============
+                if args.verbose:
+                    decoded_img = decoded_val[1]
+                    imshow(torchvision.utils.make_grid(img))
+                    imshow(torchvision.utils.make_grid(decoded_img.data))
+
+            # ============ Logging ============
+            wandb.log({"Validation Loss": val_loss})
+            print('[%d, %5d] Validation loss: %.3f' % (epoch + 1, j + 1, val_loss))
+
+    exit(0)
 
 
-    ''' Do Validation '''
-    if args.valid:
-        print("Loading checkpoint...")
-        classifier.ae.load_state_dict(torch.load("./weights/ae.pkl"))
-        dataiter = iter(loader_val_sup)
-        images, labels = dataiter.next()
-        # print('GroundTruth: ', ' '.join('%5s' % classes[labels[j]] for j in range(16)))
-        images = Variable(images.cuda())
-        decoded_imgs = classifier.ae(images)[1]
-        if args.verbose:
-            imshow(torchvision.utils.make_grid(images))
-            imshow(torchvision.utils.make_grid(decoded_imgs.data))
 
 
 if __name__ == '__main__':

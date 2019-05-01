@@ -44,9 +44,8 @@ class Classifier(nn.Module):
             nn.Linear(6*6*96, 256), # TODO: - Decide what h_dim to use here
             nn.ReLU(),
             nn.Linear(256, 10))
-        self.softmax = nn.Softmax()
 
     def forward(self, x):
         encoded = self.ae.encoder(x)
         mlp = self.mlp(encoded.view(encoded.shape[0], -1))
-        return self.softmax(mlp)
+        return mlp
