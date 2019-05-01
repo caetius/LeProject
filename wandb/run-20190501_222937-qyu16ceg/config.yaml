@@ -1,0 +1,23 @@
+wandb_version: 1
+
+ckpt_on:
+  desc: null
+  value: false
+corr_type:
+  desc: null
+  value: mask
+perc_noise:
+  desc: null
+  value: 0.2
+valid:
+  desc: null
+  value: false
+verbose:
+  desc: null
+  value: true
+wandb:
+  desc: null
+  value: le-project
+wandb_on:
+  desc: null
+  value: true
