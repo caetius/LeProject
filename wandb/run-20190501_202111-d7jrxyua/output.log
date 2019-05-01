@@ -1,0 +1,39 @@
+============== Encoder ==============
+Sequential(
+  (0): Conv2d(3, 12, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+  (1): ReLU()
+  (2): Conv2d(12, 24, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+  (3): ReLU()
+  (4): Conv2d(24, 48, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+  (5): ReLU()
+  (6): Conv2d(48, 96, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+  (7): ReLU()
+)
+============== Decoder ==============
+Sequential(
+  (0): ConvTranspose2d(96, 48, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+  (1): ReLU()
+  (2): ConvTranspose2d(48, 24, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+  (3): ReLU()
+  (4): ConvTranspose2d(24, 12, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+  (5): ReLU()
+  (6): ConvTranspose2d(12, 3, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+  (7): Sigmoid()
+)
+
+Traceback (most recent call last):
+  File "/Users/Caetius/Desktop/LeProject/DAE/pretrain.py", line 112, in <module>
+    main()
+  File "/Users/Caetius/Desktop/LeProject/DAE/pretrain.py", line 59, in main
+    pretrained_dict = torch.load(pretrained_weight_name)
+  File "/anaconda3/envs/cpc/lib/python3.6/site-packages/torch/serialization.py", line 358, in load
+    return _load(f, map_location, pickle_module)
+  File "/anaconda3/envs/cpc/lib/python3.6/site-packages/torch/serialization.py", line 542, in _load
+    result = unpickler.load()
+  File "/anaconda3/envs/cpc/lib/python3.6/site-packages/torch/serialization.py", line 508, in persistent_load
+    data_type(size), location)
+  File "/anaconda3/envs/cpc/lib/python3.6/site-packages/torch/serialization.py", line 104, in default_restore_location
+    result = fn(storage, location)
+  File "/anaconda3/envs/cpc/lib/python3.6/site-packages/torch/serialization.py", line 75, in _cuda_deserialize
+    raise RuntimeError('Attempting to deserialize object on a CUDA '
+RuntimeError: Attempting to deserialize object on a CUDA device but torch.cuda.is_available() is False. If you are running on a CPU-only machine, please use torch.load with map_location='cpu' to map your storages to the CPU.
