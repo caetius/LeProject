@@ -31,6 +31,11 @@ def main():
     pretrained_weight_name = os.path.join(file_path, "weights/%s/ae_%s.pkl" % (args.corr_type, str(args.perc_noise)))
     finetuned_weight_name = os.path.join(file_path,"weights/%s/ae_finetuned_%s.pkl" % (args.corr_type, str(args.perc_noise)))
 
+    if not os.path.exists(os.path.join(file_path, "weights")) or os.path.join(file_path, "weights/%s/ae_%s.pkl" % (args.corr_type, str(args.perc_noise))):
+        raise Exception('Your pretrained weights folder is missing')
+        exit(1)
+
+
     wandb.config.update(args)
 
 

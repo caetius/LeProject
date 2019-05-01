@@ -1,0 +1,182 @@
+diff --git a/__pycache__/models.cpython-36.pyc b/__pycache__/models.cpython-36.pyc
+index 8e9318d..52bf951 100644
+Binary files a/__pycache__/models.cpython-36.pyc and b/__pycache__/models.cpython-36.pyc differ
+diff --git a/__pycache__/noise.cpython-36.pyc b/__pycache__/noise.cpython-36.pyc
+index febcbcf..aabb296 100644
+Binary files a/__pycache__/noise.cpython-36.pyc and b/__pycache__/noise.cpython-36.pyc differ
+diff --git a/models.py b/models.py
+index 93a9f53..ad0e044 100644
+--- a/models.py
++++ b/models.py
+@@ -41,9 +41,9 @@ class Classifier(nn.Module):
+         super(Classifier, self).__init__()
+         self.ae = Autoencoder()
+         self.mlp = nn.Sequential(
+-            nn.Linear(6*6*96, 256), # TODO: - Decide what h_dim to use here
++            nn.Linear(6*6*96, 100), # From Vincent 2010
+             nn.ReLU(),
+-            nn.Linear(256, 10))
++            nn.Linear(100, 10))
+ 
+     def forward(self, x):
+         encoded = self.ae.encoder(x)
+diff --git a/noise.py b/noise.py
+index 044a7c6..15c5322 100644
+--- a/noise.py
++++ b/noise.py
+@@ -1,4 +1,5 @@
+ import torch
++import math
+ 
+ def corrupt_input(corr_type, data, v):
+ 
+@@ -11,6 +12,9 @@ def corrupt_input(corr_type, data, v):
+     elif corr_type == 'gauss':
+         x_corrupted = gaussian_noise(data, 0, v)
+ 
++    elif corr_type == 'local_gauss':
++        x_corrupted = local_gaussian_noise(data, 20, v)
++
+     elif corr_type == 'none':
+         x_corrupted = data
+ 
+@@ -37,9 +41,41 @@ def salt_and_pepper(X, v):
+     noisy[rnd > (1 - v/2)] = 1.
+     return noisy
+ 
+-'''Apply gaussian noise by adding values sampled from a gaussian to v of the elements in X to the min and max values'''
++'''Apply gaussian noise by adding values sampled from a gaussian to v of the elements in X'''
+ def gaussian_noise(X, miu, std):
+     noise = torch.distributions.normal.Normal(miu, std).sample(X.shape)
+     if torch.cuda.is_available():
+         noise = noise.type(torch.cuda.FloatTensor)
+-    return torch.clamp(torch.add(X,noise),0,1)
+\ No newline at end of file
++    return torch.clamp(torch.add(X,noise),0,1)
++
++'''Apply gaussian noise via a local gaussian filter'''
++def local_gaussian_noise(X, miu, std):
++    # Set these to whatever you want for your gaussian filter
++    kernel_size = miu
++
++    # Create a x, y coordinate grid of shape (kernel_size, kernel_size, 2)
++    x_cord = torch.arange(kernel_size)
++    x_grid = x_cord.repeat(kernel_size).view(kernel_size, kernel_size)
++    y_grid = x_grid.t()
++    xy_grid = torch.stack([x_grid, y_grid], dim=-1)
++    print(xy_grid.shape)
++
++
++    mean = (kernel_size - 1) / 2.
++    variance = std ** 2.
++
++    # Calculate the 2-dimensional gaussian kernel which is
++    # the product of two gaussian distributions for two different
++    # variables (in this case called x and y)
++    gaussian_kernel = (1. / (2. * math.pi * variance)) * \
++                      torch.exp(
++                          -torch.sum((xy_grid - mean) ** 2., dim=-1) / \
++                          (2 * variance)
++                      )
++    # Make sure sum of values in gaussian kernel equals 1.
++    gaussian_kernel = gaussian_kernel / torch.sum(gaussian_kernel)
++
++    # Reshape to 2d depthwise convolutional weight
++    gaussian_kernel = gaussian_kernel.view(1, 1, kernel_size, kernel_size)
++    gaussian_kernel = gaussian_kernel.repeat(3, 1, 1, 1)
++
+diff --git a/pretrain.py b/pretrain.py
+index 1101112..eab71af 100644
+--- a/pretrain.py
++++ b/pretrain.py
+@@ -33,7 +33,7 @@ def main():
+                         help="Perform validation only.", metavar='v')
+     parser.add_argument("--perc_noise", '-percentage_of_noise', type=float, default=0.05,
+                         help="Percentage of noise to add.", metavar='p')
+-    parser.add_argument("--corr_type", '-type_of_noise', type=str, default="sp",
++    parser.add_argument("--corr_type", '-type_of_noise', type=str, default="local_gauss",
+                         help="Percentage of noise to add.", metavar='c')
+     parser.add_argument("--verbose", '-verbose_mode', type=bool, default=False,
+                         help="Show images as you feed them in, show reconstructions as they come out.", metavar='b')
+diff --git a/wandb/debug.log b/wandb/debug.log
+index 4d30514..2f2a317 100644
+--- a/wandb/debug.log
++++ b/wandb/debug.log
+@@ -1,61 +1,16 @@
+-2019-04-30 22:16:31,208 DEBUG   MainThread:66276 [wandb_config.py:_load_defaults():81] no defaults not found in config-defaults.yaml
+-2019-04-30 22:16:31,211 DEBUG   MainThread:66276 [cmd.py:execute():722] Popen(['git', 'rev-parse', '--show-toplevel'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
+-2019-04-30 22:16:31,224 DEBUG   MainThread:66276 [cmd.py:execute():722] Popen(['git', 'cat-file', '--batch-check'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
+-2019-04-30 22:16:31,235 DEBUG   MainThread:66276 [cmd.py:execute():722] Popen(['git', 'rev-parse', '--show-toplevel'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
+-2019-04-30 22:16:31,253 DEBUG   MainThread:66276 [run_manager.py:__init__():452] Initialized sync for DAE/9ikdb4jr
+-2019-04-30 22:16:31,256 INFO    MainThread:66276 [run_manager.py:wrap_existing_process():986] wrapping existing process 66269
+-2019-04-30 22:16:31,261 DEBUG   MainThread:66276 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): pypi.org:443
+-2019-04-30 22:16:31,298 DEBUG   MainThread:66276 [connectionpool.py:_make_request():393] https://pypi.org:443 "GET /pypi/wandb/json HTTP/1.1" 200 31060
+-2019-04-30 22:16:31,310 INFO    MainThread:66276 [run_manager.py:init_run():810] system metrics and metadata threads started
+-2019-04-30 22:16:31,310 INFO    MainThread:66276 [run_manager.py:init_run():844] upserting run before process can begin, waiting at most 10 seconds
+-2019-04-30 22:16:31,310 DEBUG   Thread-13 :66276 [cmd.py:execute():722] Popen(['git', 'rev-parse', '--show-toplevel'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
+-2019-04-30 22:16:31,329 DEBUG   Thread-13 :66276 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): api.wandb.ai:443
+-2019-04-30 22:16:31,437 DEBUG   Thread-13 :66276 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 323
+-2019-04-30 22:16:31,441 INFO    Thread-13 :66276 [run_manager.py:_upsert_run():900] saving patches
+-2019-04-30 22:16:31,441 DEBUG   Thread-13 :66276 [cmd.py:execute():722] Popen(['git', 'rev-parse', '--show-toplevel'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
+-2019-04-30 22:16:31,454 DEBUG   Thread-13 :66276 [cmd.py:execute():722] Popen(['git', 'diff', '--cached', '--abbrev=40', '--full-index', '--raw'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
+-2019-04-30 22:16:31,465 DEBUG   Thread-13 :66276 [cmd.py:execute():722] Popen(['git', 'diff', '--abbrev=40', '--full-index', '--raw'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
+-2019-04-30 22:16:31,478 DEBUG   Thread-13 :66276 [cmd.py:execute():722] Popen(['git', 'version'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
+-2019-04-30 22:16:31,513 INFO    Thread-13 :66276 [run_manager.py:_upsert_run():902] saving pip packages
+-2019-04-30 22:16:31,515 INFO    Thread-13 :66276 [run_manager.py:_upsert_run():904] initializing streaming files api
+-2019-04-30 22:16:31,516 INFO    Thread-13 :66276 [run_manager.py:_upsert_run():911] unblocking file change observer, beginning sync with W&B servers
+-2019-04-30 22:16:31,517 INFO    MainThread:66276 [run_manager.py:wrap_existing_process():1003] informing user process we are ready to proceed
+-2019-04-30 22:16:31,517 INFO    MainThread:66276 [run_manager.py:_sync_etc():1059] entering loop for messages from user process
+-2019-04-30 22:16:31,535 INFO    MainThread:66276 [run_manager.py:_sync_etc():1082] received message from user process: {"exitcode": 1}
+-2019-04-30 22:16:31,535 INFO    MainThread:66276 [run_manager.py:_sync_etc():1163] closing log streams and sending exitcode to W&B
+-2019-04-30 22:16:31,536 INFO    MainThread:66276 [run_manager.py:shutdown():918] shutting down system stats and metadata service
+-2019-04-30 22:16:32,226 INFO    Thread-2  :66276 [run_manager.py:_on_file_created():576] file/dir created: /Users/Caetius/Desktop/LeProject/DAE/wandb/run-20190501_021630-9ikdb4jr/diff.patch
+-2019-04-30 22:16:32,228 INFO    Thread-2  :66276 [run_manager.py:_on_file_created():576] file/dir created: /Users/Caetius/Desktop/LeProject/DAE/wandb/run-20190501_021630-9ikdb4jr/config.yaml
+-2019-04-30 22:16:32,236 DEBUG   Thread-2  :66276 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): api.wandb.ai:443
+-2019-04-30 22:16:32,315 INFO    MainThread:66276 [run_manager.py:shutdown():923] stopping streaming files and file change observer
+-2019-04-30 22:16:32,334 DEBUG   Thread-2  :66276 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 600
+-2019-04-30 22:16:32,337 INFO    MainThread:66276 [run_manager.py:_on_file_created():576] file/dir created: /Users/Caetius/Desktop/LeProject/DAE/wandb/run-20190501_021630-9ikdb4jr/requirements.txt
+-2019-04-30 22:16:32,337 INFO    MainThread:66276 [run_manager.py:_on_file_created():576] file/dir created: /Users/Caetius/Desktop/LeProject/DAE/wandb/run-20190501_021630-9ikdb4jr/wandb-events.jsonl
+-2019-04-30 22:16:32,338 INFO    MainThread:66276 [run_manager.py:_on_file_created():576] file/dir created: /Users/Caetius/Desktop/LeProject/DAE/wandb/run-20190501_021630-9ikdb4jr/wandb-metadata.json
+-2019-04-30 22:16:32,341 INFO    MainThread:66276 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/DAE/wandb/run-20190501_021630-9ikdb4jr/wandb-metadata.json
+-2019-04-30 22:16:32,350 DEBUG   Thread-16 :66276 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): api.wandb.ai:443
+-2019-04-30 22:16:32,350 DEBUG   Thread-14 :66276 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): api.wandb.ai:443
+-2019-04-30 22:16:32,351 DEBUG   MainThread:66276 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): api.wandb.ai:443
+-2019-04-30 22:16:32,432 DEBUG   Thread-14 :66276 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 732
+-2019-04-30 22:16:32,433 DEBUG   Thread-16 :66276 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 722
+-2019-04-30 22:16:32,441 DEBUG   MainThread:66276 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 600
+-2019-04-30 22:16:32,446 DEBUG   Thread-17 :66276 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): api.wandb.ai:443
+-2019-04-30 22:16:32,456 DEBUG   Thread-16 :66276 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): storage.googleapis.com:443
+-2019-04-30 22:16:32,456 DEBUG   Thread-14 :66276 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): storage.googleapis.com:443
+-2019-04-30 22:16:32,539 DEBUG   Thread-17 :66276 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 744
+-2019-04-30 22:16:32,546 DEBUG   Thread-17 :66276 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): storage.googleapis.com:443
+-2019-04-30 22:16:32,668 DEBUG   Thread-14 :66276 [connectionpool.py:_make_request():393] https://storage.googleapis.com:443 "PUT /wandb-production.appspot.com/dlc423/DAE/9ikdb4jr/config.yaml?Expires=1556677052&GoogleAccessId=gorilla-cloud-storage%40wandb-production.iam.gserviceaccount.com&Signature=oOCkr4InTmfYVGaVBG5qovgZW7ZkaTO5xCz7yfhe6OuR6lPI1qRlUKTDKpCiOsylu1u3WyzxvN6SfES%2FYikCeBkIulMYZvk%2F1WzaJhtjFinHA1cs6ofhLe%2FHsYCQuChE1IRACsTAgHWIYQIfVnTyDQVmmadnIkfrKEh8ezZY3aDQXzJMyOXT3Yp%2BaxVVEE1YnDoQtUtS3YyFNBWPvOUpDFzZOADzae8Gd2c1FjMI%2BAu3xtU%2BLdtwPOP1eXCtbm%2FeJvYXXBcTRlgv3QQOcOmlVqjnJO5mDLv15MwGVerW%2BymQS9LkmoK2e3wRYL1ZoqmZmsDrBCiw%2BuouhohSf%2FP4Uw%3D%3D HTTP/1.1" 200 0
+-2019-04-30 22:16:32,676 DEBUG   Thread-18 :66276 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): api.wandb.ai:443
+-2019-04-30 22:16:32,677 DEBUG   Thread-16 :66276 [connectionpool.py:_make_request():393] https://storage.googleapis.com:443 "PUT /wandb-production.appspot.com/dlc423/DAE/9ikdb4jr/diff.patch?Expires=1556677052&GoogleAccessId=gorilla-cloud-storage%40wandb-production.iam.gserviceaccount.com&Signature=ZNO9zVXwBBnFwzlYcndW4YrZ6zpF7wrclY020vlCbVbNrjylEb3wSynuNyu6LeayAWe%2BFPnWxQtymOwPkkLzEy98TjzDJ1U4NQxGzbizUtEriJHg1MrCJXWSSSUyq2rgEze43S2oMzuNZDtFSweb1l%2BEUwgN8%2FBBpwReDBqiQArdgNTCvmOzAvivW5OMcFtyCFVtgDlnzCyS2QiFOZ5jdIlY7rVukk52%2BfKreEqKggAOprgsrBaKRvkQJIct%2BhiGxJJdlyYjuY6NOj2gvqlgP%2FjmIOlH4eLt8eklPEjPPxnl8gWVwirqyFBUHPwaH4825zCrX36k8PRwP4TbpyU4KA%3D%3D HTTP/1.1" 200 0
+-2019-04-30 22:16:32,761 DEBUG   Thread-18 :66276 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 749
+-2019-04-30 22:16:32,767 DEBUG   Thread-18 :66276 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): storage.googleapis.com:443
+-2019-04-30 22:16:32,787 DEBUG   Thread-17 :66276 [connectionpool.py:_make_request():393] https://storage.googleapis.com:443 "PUT /wandb-production.appspot.com/dlc423/DAE/9ikdb4jr/requirements.txt?Expires=1556677052&GoogleAccessId=gorilla-cloud-storage%40wandb-production.iam.gserviceaccount.com&Signature=g%2F8G5mQguVZNqMub3ehYEjRH%2BbkW%2BXalzXU0Ba8zbC1TKXLV%2FHnxQfsueImpqNK%2BARl5go53sdUQ%2BH10%2BHBsaA%2BOlFDtqO0XyfYHE27BGwdxbk7J5m12g%2B4wjN0bBDV6jq6OYImWJMXOx1FM1FAqyUuhqWbBPak4WgRI6AkDyRAarnKgFHRTNe6WwTOaOejFR%2FQncHSLmj9wGLyuVYZKgXeKBD49iRFT3RwtXRc9NmXboUszGOB5rm65ArqINrZwAYJ3RvuFh8KmtaiKoqdgaZ634UXY3raEIDEUXfrs0Hfco63wPZKXhugAwhKq9oUVVSKyEWaHoOctIQEZvH%2Ba0A%3D%3D HTTP/1.1" 200 0
+-2019-04-30 22:16:32,971 DEBUG   Thread-18 :66276 [connectionpool.py:_make_request():393] https://storage.googleapis.com:443 "PUT /wandb-production.appspot.com/dlc423/DAE/9ikdb4jr/config.yaml?Expires=1556677052&GoogleAccessId=gorilla-cloud-storage%40wandb-production.iam.gserviceaccount.com&Signature=oOCkr4InTmfYVGaVBG5qovgZW7ZkaTO5xCz7yfhe6OuR6lPI1qRlUKTDKpCiOsylu1u3WyzxvN6SfES%2FYikCeBkIulMYZvk%2F1WzaJhtjFinHA1cs6ofhLe%2FHsYCQuChE1IRACsTAgHWIYQIfVnTyDQVmmadnIkfrKEh8ezZY3aDQXzJMyOXT3Yp%2BaxVVEE1YnDoQtUtS3YyFNBWPvOUpDFzZOADzae8Gd2c1FjMI%2BAu3xtU%2BLdtwPOP1eXCtbm%2FeJvYXXBcTRlgv3QQOcOmlVqjnJO5mDLv15MwGVerW%2BymQS9LkmoK2e3wRYL1ZoqmZmsDrBCiw%2BuouhohSf%2FP4Uw%3D%3D HTTP/1.1" 200 0
+-2019-04-30 22:16:33,349 DEBUG   Thread-6  :66276 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): api.wandb.ai:443
+-2019-04-30 22:16:33,349 DEBUG   Thread-19 :66276 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): api.wandb.ai:443
+-2019-04-30 22:16:33,439 DEBUG   Thread-19 :66276 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 758
+-2019-04-30 22:16:33,445 DEBUG   Thread-19 :66276 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): storage.googleapis.com:443
+-2019-04-30 22:16:33,456 DEBUG   Thread-6  :66276 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/DAE/9ikdb4jr/file_stream HTTP/1.1" 200 312
+-2019-04-30 22:16:33,517 DEBUG   Thread-6  :66276 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/DAE/9ikdb4jr/file_stream HTTP/1.1" 200 309
+-2019-04-30 22:16:33,518 INFO    MainThread:66276 [run_manager.py:_sync_etc():1174] process only ran for 2 seconds, not syncing files
+-2019-04-30 22:16:33,518 INFO    MainThread:66276 [9ikdb4jr:run_manager.py:_sync_etc():1174] process only ran for 2 seconds, not syncing files
++2019-05-01 12:33:42,033 DEBUG   MainThread:6015 [wandb_config.py:_load_defaults():81] no defaults not found in config-defaults.yaml
++2019-05-01 12:33:42,038 DEBUG   MainThread:6015 [cmd.py:execute():722] Popen(['git', 'cat-file', '--batch-check'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
++2019-05-01 12:33:42,049 DEBUG   MainThread:6015 [cmd.py:execute():722] Popen(['git', 'rev-parse', '--show-toplevel'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
++2019-05-01 12:33:42,066 DEBUG   MainThread:6015 [run_manager.py:__init__():452] Initialized sync for le-project/wf1tm6bf
++2019-05-01 12:33:42,069 INFO    MainThread:6015 [run_manager.py:wrap_existing_process():986] wrapping existing process 6009
++2019-05-01 12:33:42,074 DEBUG   MainThread:6015 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): pypi.org:443
++2019-05-01 12:33:42,109 DEBUG   MainThread:6015 [connectionpool.py:_make_request():393] https://pypi.org:443 "GET /pypi/wandb/json HTTP/1.1" 200 31060
++2019-05-01 12:33:42,121 INFO    MainThread:6015 [run_manager.py:init_run():810] system metrics and metadata threads started
++2019-05-01 12:33:42,122 INFO    MainThread:6015 [run_manager.py:init_run():844] upserting run before process can begin, waiting at most 10 seconds
++2019-05-01 12:33:42,129 DEBUG   Thread-13 :6015 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): api.wandb.ai:443
++2019-05-01 12:33:42,229 DEBUG   Thread-13 :6015 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 352
++2019-05-01 12:33:42,233 INFO    Thread-13 :6015 [run_manager.py:_upsert_run():900] saving patches
++2019-05-01 12:33:42,233 DEBUG   Thread-13 :6015 [cmd.py:execute():722] Popen(['git', 'rev-parse', '--show-toplevel'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
++2019-05-01 12:33:42,245 DEBUG   Thread-13 :6015 [cmd.py:execute():722] Popen(['git', 'diff', '--cached', '--abbrev=40', '--full-index', '--raw'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
++2019-05-01 12:33:42,256 DEBUG   Thread-13 :6015 [cmd.py:execute():722] Popen(['git', 'diff', '--abbrev=40', '--full-index', '--raw'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
++2019-05-01 12:33:42,269 DEBUG   Thread-13 :6015 [cmd.py:execute():722] Popen(['git', 'version'], cwd=/Users/Caetius/Desktop/LeProject/DAE, universal_newlines=False, shell=None)
