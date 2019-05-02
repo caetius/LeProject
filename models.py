@@ -57,13 +57,13 @@ class BatchNormAutoencoder(nn.Module):
         )
         self.decoder = nn.Sequential(
             nn.ConvTranspose2d(96, 48, 4, stride=2, padding=1),  # [batch, 48, 12, 12]
-            nn.BatchNorm2d(96),
-            nn.ReLU(),
-			nn.ConvTranspose2d(48, 24, 4, stride=2, padding=1),  # [batch, 24, 24, 24]
             nn.BatchNorm2d(48),
             nn.ReLU(),
-			nn.ConvTranspose2d(24, 12, 4, stride=2, padding=1),  # [batch, 12, 48, 48]
+			nn.ConvTranspose2d(48, 24, 4, stride=2, padding=1),  # [batch, 24, 24, 24]
             nn.BatchNorm2d(24),
+            nn.ReLU(),
+			nn.ConvTranspose2d(24, 12, 4, stride=2, padding=1),  # [batch, 12, 48, 48]
+            nn.BatchNorm2d(12),
             nn.ReLU(),
             nn.ConvTranspose2d(12, 3, 4, stride=2, padding=1),   # [batch, 3, 96, 96]
             nn.Sigmoid(),

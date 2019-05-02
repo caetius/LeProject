@@ -88,7 +88,6 @@ def main():
                 else:
                     out = classifier(inputs)
             loss = criterion(out, labels)
-
             # ============ Backward ============
             loss.backward()
             optimizer.step()
@@ -96,10 +95,11 @@ def main():
             running_loss += loss.data
 
             if args.verbose:
-                imshow(inputs[0])
-                if args.add_noise:
-                    imshow(noised[0])
-                imshow(dec[0].detach())
+                for idx in range(batch_size):
+                    imshow(inputs[idx])
+                    if args.add_noise:
+                        imshow(noised[idx])
+                    imshow(dec[idx].detach())
 
             # ============ Logging ============
             if i % 1000 == 999:
