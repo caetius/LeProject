@@ -1,5 +1,5 @@
 # Model
-from models import Autoencoder, Classifier
+from models import Autoencoder, Classifier, get_model
 
 # External
 import torch
@@ -9,10 +9,10 @@ import numpy as np
 import os
 
 ''' Instantiate Model '''
-def create_model(model_type, ckpt=None):
+def create_model(train_type, ckpt=None, verbose=False, model_type="ae"):
     # Create and print DAE
-    if model_type == "pretrain":
-        ae = Autoencoder()
+    if train_type == "pretrain":
+        ae = get_model(model_type)
         if ckpt != None:
             file_exists(ckpt)
             print("Loading checkpoint ", ckpt)
@@ -24,8 +24,8 @@ def create_model(model_type, ckpt=None):
             print("Model moved to GPU.")
         return ae
     # Create and print Classifier based on Pretrained DAE
-    elif model_type == "classify":
-        classifier = Classifier()
+    elif train_type == "classify":
+        classifier = Classifier(model_type=model_type, verbose=verbose)
         if ckpt != None:
             file_exists(ckpt)
             print("Loading checkpoint ", ckpt)
@@ -36,7 +36,6 @@ def create_model(model_type, ckpt=None):
             classifier = classifier.cuda()
             print("Model moved to GPU.")
         return classifier
-
 
 ''' Print Model '''
 def print_model(e, encoder, d, decoder, final=None):

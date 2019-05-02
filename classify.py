@@ -25,16 +25,20 @@ def main():
                         help="Name of WAND Project.", metavar='w1')
     parser.add_argument("--wandb_on", '-is_wand_on', type=bool, default=False,
                         help="Name of WAND Project.", metavar='w2')
-    parser.add_argument("--add_noise", '-noise', type=bool, default=True,
+    parser.add_argument("--add_noise", '-noise', type=bool, default=False,
                         help="Name of WAND Project.", metavar='n')
+    # possible args: 'orig' (Original AE), 'bn' (Batch Normed version of Original)
+    parser.add_argument("--model_type", '-model', type=str, default='orig',
+                        help="Type of Autoencoder used.", metavar='ae')
     args = parser.parse_args()
 
     ''' IMPORTANT: Name the weights such that there's no naming conflict between runs.'''
     file_path = os.path.dirname(os.path.abspath(__file__))
-    pretrained_weight_name = os.path.join(file_path, "weights/%s/ae_%s.pkl" % (args.corr_type, str(args.perc_noise)))
-    finetuned_weight_name = os.path.join(file_path,"weights/%s/ae_finetuned_%s.pkl" % (args.corr_type, str(args.perc_noise)))
+    pretrained_weight_name = os.path.join(file_path, "weights/%s/ae_%s_%s.pkl" % (args.corr_type, args.model_type, str(args.perc_noise)))
+    finetuned_weight_name = os.path.join(file_path,"weights/%s/ae_finetuned_%s_%s.pkl" % (args.corr_type, args.model_type, str(args.perc_noise)))
 
-    if not (os.path.exists(os.path.join(file_path, "weights")) or os.path.join(file_path, "weights/%s/ae_%s.pkl" % (args.corr_type, str(args.perc_noise)))):
+    # Checks that the pretrained weight folder and subfolder exist.
+    if not os.path.exists(os.path.join(file_path, "weights")) or not os.path.exists(os.path.join(file_path, "weights/%s" % args.corr_type)):
         raise Exception('Your pretrained weights folder is missing')
         exit(1)
 
@@ -42,9 +46,8 @@ def main():
         wandb.init(project=args.wandb)
         wandb.config.update(args)
 
-
     # Create model
-    classifier = create_model("classify", ckpt=pretrained_weight_name)
+    classifier = create_model("classify", ckpt=pretrained_weight_name, verbose=args.verbose, model_type=args.model_type)
 
     ''' Load data '''
     loader_sup, loader_val_sup, loader_unsup = nyu_image_loader("../ssl_data_96", 32)
@@ -56,6 +59,8 @@ def main():
     if args.wandb_on:
         wandb.watch(classifier)
 
+    prev_top1 = 0.
+
     for epoch in range(6):
         running_loss = 0.0
 
@@ -65,18 +70,28 @@ def main():
             inputs = get_torch_vars(inputs)
             labels = get_torch_vars(labels)
 
+            optimizer.zero_grad()
+
             # ============ Forward ============
             if args.add_noise:
                 noised = corrupt_input(args.corr_type, inputs, args.perc_noise)
                 noised = get_torch_vars(noised)
-                out, dec = classifier(noised)
+                if args.verbose:
+                    out, dec = classifier(noised)
+                else:
+                    out = classifier(noised)
             else:
-                out, dec = classifier(inputs)
+                if args.verbose:
+                    out, dec = classifier(inputs)
+                else:
+                    out = classifier(inputs)
             loss = criterion(out, labels)
+
             # ============ Backward ============
-            optimizer.zero_grad()
             loss.backward()
             optimizer.step()
+
+            running_loss += loss.data
 
             if args.verbose:
                 imshow(inputs[0])
@@ -85,7 +100,6 @@ def main():
                 imshow(dec[0].detach())
 
             # ============ Logging ============
-            running_loss += loss.data
             if i % 1000 == 999:
                 if args.wandb_on:
                     wandb.log({"Finetuning Loss": running_loss / 1000,
@@ -132,6 +146,13 @@ def main():
             # Accuracy
             top_1_acc = n_correct_top_1 / n_samples
             top_k_acc = n_correct_top_k / n_samples
+
+            # Early Stopping
+            if(top_1_acc < prev_top1):
+                print("Early stopping triggered.")
+                exit(0)
+            else:
+                prev_top1 = top_1_acc
 
             # ============ Logging ============
             if args.wandb_on:

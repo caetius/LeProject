@@ -40,6 +40,9 @@ def main():
                         help="Name of WAND Project.", metavar='w2')
     parser.add_argument("--ckpt_on", '-load_weights_from_ckpt', type=bool, default=True,
                         help="Whether to log to w&b.", metavar='ckpt')
+    # possible args: 'orig' (Original AE), 'bn' (Batch Normed version of Original)
+    parser.add_argument("--model_type", '-model', type=str, default='orig',
+                        help="Type of Autoencoder used.", metavar='ae')
     args = parser.parse_args()
 
     ''' IMPORTANT: Name the weights such that there's no naming conflict between runs.'''
@@ -47,7 +50,7 @@ def main():
     if not os.path.exists(os.path.join(file_path, "weights")):
         os.mkdir(os.path.join(file_path, 'weights'))
 
-    pretrained_weight_name = os.path.join(file_path, "weights/%s/ae_%s.pkl" % (args.corr_type, str(args.perc_noise)))
+    pretrained_weight_name = os.path.join(file_path, "weights/%s/ae_%s_%s.pkl" % (args.corr_type, args.model_type, str(args.perc_noise)))
 
     if args.wandb_on:
         wandb.init(project=args.wandb)
@@ -55,9 +58,9 @@ def main():
 
     # Create model
     if args.ckpt_on:
-        ae = create_model("pretrain", pretrained_weight_name)
+        ae = create_model("pretrain", ckpt=pretrained_weight_name, verbose=args.verbose, model_type=args.model_type)
     else:
-        ae = create_model("pretrain")
+        ae = create_model("pretrain", ckpt=None, verbose=args.verbose, model_type=args.model_type)
     ae.train()
 
     ''' Load data '''
