@@ -36,9 +36,9 @@ def main():
                         help="Show images as you feed them in, show reconstructions as they come out.", metavar='b')
     parser.add_argument("--wandb", '-name_of_wandb_proj', type=str, default="le-project",
                         help="Name of WAND Project.", metavar='w1')
-    parser.add_argument("--wandb_on", '-is_wand_on', type=bool, default=True,
+    parser.add_argument("--wandb_on", '-is_wand_on', type=bool, default=False,
                         help="Name of WAND Project.", metavar='w2')
-    parser.add_argument("--ckpt_on", '-load_weights_from_ckpt', type=bool, default=False,
+    parser.add_argument("--ckpt_on", '-load_weights_from_ckpt', type=bool, default=True,
                         help="Whether to log to w&b.", metavar='ckpt')
     args = parser.parse_args()
 

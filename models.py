@@ -48,4 +48,5 @@ class Classifier(nn.Module):
     def forward(self, x):
         encoded = self.ae.encoder(x)
         mlp = self.mlp(encoded.view(encoded.shape[0], -1))
-        return mlp
+        decoded = self.ae.decoder(encoded)
+        return mlp, decoded
