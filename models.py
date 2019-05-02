@@ -9,20 +9,24 @@ class Autoencoder(nn.Module):
 
         self.encoder = nn.Sequential(
             nn.Conv2d(3, 12, 4, stride=2, padding=1),            # [batch, 12, 48, 48]
+	    nn.BatchNorm2d(12)	
             nn.ReLU(),
             nn.Conv2d(12, 24, 4, stride=2, padding=1),           # [batch, 24, 24, 24]
             nn.ReLU(),
-			nn.Conv2d(24, 48, 4, stride=2, padding=1),           # [batch, 48, 12, 12]
+	    nn.Conv2d(24, 48, 4, stride=2, padding=1),           # [batch, 48, 12, 12]
+	    nn.BatchNorm2d(48)
             nn.ReLU(),
- 			nn.Conv2d(48, 96, 4, stride=2, padding=1),           # [batch, 96, 6, 6]
+ 	    nn.Conv2d(48, 96, 4, stride=2, padding=1),           # [batch, 96, 6, 6]
             nn.ReLU(),
         )
         self.decoder = nn.Sequential(
             nn.ConvTranspose2d(96, 48, 4, stride=2, padding=1),  # [batch, 48, 12, 12]
+            nn.BatchNorm(48)
             nn.ReLU(),
-			nn.ConvTranspose2d(48, 24, 4, stride=2, padding=1),  # [batch, 24, 24, 24]
+	    nn.ConvTranspose2d(48, 24, 4, stride=2, padding=1),  # [batch, 24, 24, 24]
             nn.ReLU(),
-			nn.ConvTranspose2d(24, 12, 4, stride=2, padding=1),  # [batch, 12, 48, 48]
+	    nn.ConvTranspose2d(24, 12, 4, stride=2, padding=1),  # [batch, 12, 48, 48]
+	    nn.BatchNorm(12)
             nn.ReLU(),
             nn.ConvTranspose2d(12, 3, 4, stride=2, padding=1),   # [batch, 3, 96, 96]
             nn.Sigmoid(),
