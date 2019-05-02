@@ -150,9 +150,9 @@ class Classifier(nn.Module):
 ''' This takes a string arg and returns the model corresponding to that string'''
 def get_model(type, type2=None, stack=0):
     if type == "orig":
-        ae = BatchNormAutoencoder()
-    elif type == "bn":
         ae = Autoencoder()
+    elif type == "bn":
+        ae = BatchNormAutoencoder()
     elif type == "stacked":
         ae = StackedAE(model_type=type2, stack_size=stack)
     else:
