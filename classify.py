@@ -39,6 +39,10 @@ def main():
     pretrained_weight_name = os.path.join(file_path, "weights/%s/ae_%s_%s.pkl" % (args.corr_type, args.model_type, str(args.perc_noise)))
     finetuned_weight_name = os.path.join(file_path,"weights/%s/ae_finetuned_%s_%s.pkl" % (args.corr_type, args.model_type, str(args.perc_noise)))
 
+    ''' Path to save images'''
+    if not os.path.exists(os.path.join(file_path, "images")):
+        os.mkdir(os.path.join(file_path, 'images'))
+
     # Checks that the pretrained weight folder and subfolder exist.
     if not os.path.exists(os.path.join(file_path, "weights")) or not os.path.exists(os.path.join(file_path, "weights/%s" % args.corr_type)):
         raise Exception('Your pretrained weights folder is missing')
@@ -63,10 +67,11 @@ def main():
 
     prev_top1 = 0.
 
-    for epoch in range(6):
+    for epoch in range(10):
         running_loss = 0.0
 
         classifier.train()
+        classifier.ae.eval()
 
         for i, (inputs, labels) in enumerate(loader_sup, 0):
             inputs = get_torch_vars(inputs)
@@ -95,11 +100,10 @@ def main():
             running_loss += loss.data
 
             if args.verbose:
-                for idx in range(batch_size):
-                    imshow(inputs[idx])
-                    if args.add_noise:
-                        imshow(noised[idx])
-                    imshow(dec[idx].detach())
+                print("Iteration number: ", i)
+                grid_imshow(inputs, dec.detach())
+                if args.add_noise:
+                    grid_imshow(inputs, dec.detach(), noised)
 
             # ============ Logging ============
             if i % 1000 == 999:

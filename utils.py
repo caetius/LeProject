@@ -2,11 +2,14 @@
 from models import Classifier, get_model
 
 # External
+import torchvision
 import torch
 from torch.autograd import Variable
 import numpy as np
 
 import os
+
+file_path = os.path.dirname(os.path.abspath(__file__))
 
 ''' Instantiate Model '''
 def create_model(train_type, ckpt=None, verbose=False, model_type="ae"):
@@ -68,4 +71,27 @@ def imshow(img):
     npimg = img.cpu().numpy()
     plt.axis('off')
     plt.imshow(np.transpose(npimg, (1, 2, 0)))
+
+
+def grid_imshow(img1, img3, img2=None):
+    import matplotlib.pyplot as plt
+    plt.figure(figsize= [6,9], dpi=256)
+    if isinstance(img2, torch.Tensor):
+        plt.subplot(311)
+        plt.title('Original')
+        imshow(torchvision.utils.make_grid(img1))
+        plt.subplot(312)
+        plt.title('Noised')
+        imshow(torchvision.utils.make_grid(img2))
+        plt.subplot(313)
+        plt.title('Reconstructed')
+        imshow(torchvision.utils.make_grid(img3))
+    else:
+        plt.subplot(211)
+        plt.title('Original')
+        imshow(torchvision.utils.make_grid(img1))
+        plt.subplot(212)
+        plt.title('Reconstructed')
+        imshow(torchvision.utils.make_grid(img3))
     plt.show()
+    plt.savefig(os.path.join(file_path,'images/conv_autoencoder_finetuned.png'))

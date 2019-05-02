@@ -53,6 +53,10 @@ def main():
     if not os.path.exists(os.path.join(file_path, "weights")):
         os.mkdir(os.path.join(file_path, 'weights'))
 
+    ''' Path to save images'''
+    if not os.path.exists(os.path.join(file_path, "images")):
+        os.mkdir(os.path.join(file_path, 'images'))
+
     pretrained_weight_name = os.path.join(file_path, "weights/%s/ae_%s_%s.pkl" % (args.corr_type, args.model_type, str(args.perc_noise)))
     print(pretrained_weight_name)
 
@@ -84,7 +88,6 @@ def main():
             inputs = get_torch_vars(inputs)
             noised = corrupt_input(args.corr_type, inputs, args.perc_noise)
             noised = get_torch_vars(noised)
-            print("Iteration number: ", i)
 
             # ============ Forward ============
             encoded, outputs = ae(noised)
@@ -95,9 +98,8 @@ def main():
             optimizer.step()
             # ============ Verbose ============
             if args.verbose:
-                imshow(inputs[0])
-                imshow(noised[0])
-                imshow(outputs[0].detach())
+                print("Iteration number: ", i)
+                grid_imshow(inputs, outputs.detach(), noised)
 
             # ============ Logging ============
             running_loss += loss.data
