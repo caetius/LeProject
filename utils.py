@@ -21,7 +21,7 @@ def create_model(model_type, ckpt=None):
         print_model("Encoder", ae.encoder, "Decoder", ae.decoder)
         if torch.cuda.is_available():
             ae = ae.cuda()
-            print("Model moved to GPU in order to speed up training.")
+            print("Model moved to GPU.")
         return ae
     # Create and print Classifier based on Pretrained DAE
     elif model_type == "classify":
@@ -34,7 +34,7 @@ def create_model(model_type, ckpt=None):
         print_model("Pretrained Encoder", classifier.ae.encoder, "Classifier", classifier.mlp)
         if torch.cuda.is_available():
             classifier = classifier.cuda()
-            print("Model moved to GPU in order to speed up training.")
+            print("Model moved to GPU.")
         return classifier
 
 
