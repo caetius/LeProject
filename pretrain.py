@@ -38,11 +38,14 @@ def main():
                         help="Name of WAND Project.", metavar='w1')
     parser.add_argument("--wandb_on", '-is_wand_on', type=bool, default=False,
                         help="Name of WAND Project.", metavar='w2')
-    parser.add_argument("--ckpt_on", '-load_weights_from_ckpt', type=bool, default=True,
-                        help="Whether to log to w&b.", metavar='ckpt')
     # possible args: 'orig' (Original AE), 'bn' (Batch Normed version of Original)
     parser.add_argument("--model_type", '-model', type=str, default='orig',
                         help="Type of Autoencoder used.", metavar='ae')
+
+    # Pretraining only
+    parser.add_argument("--ckpt_on", '-load_weights_from_ckpt', type=bool, default=True,
+                        help="Whether to log to w&b.", metavar='ckpt')
+
     args = parser.parse_args()
 
     ''' IMPORTANT: Name the weights such that there's no naming conflict between runs.'''
@@ -51,6 +54,7 @@ def main():
         os.mkdir(os.path.join(file_path, 'weights'))
 
     pretrained_weight_name = os.path.join(file_path, "weights/%s/ae_%s_%s.pkl" % (args.corr_type, args.model_type, str(args.perc_noise)))
+    print(pretrained_weight_name)
 
     if args.wandb_on:
         wandb.init(project=args.wandb)

@@ -1,5 +1,5 @@
 # Model
-from models import Autoencoder, Classifier, get_model
+from models import Classifier, get_model
 
 # External
 import torch

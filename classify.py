@@ -25,11 +25,13 @@ def main():
                         help="Name of WAND Project.", metavar='w1')
     parser.add_argument("--wandb_on", '-is_wand_on', type=bool, default=False,
                         help="Name of WAND Project.", metavar='w2')
-    parser.add_argument("--add_noise", '-noise', type=bool, default=False,
-                        help="Name of WAND Project.", metavar='n')
     # possible args: 'orig' (Original AE), 'bn' (Batch Normed version of Original)
     parser.add_argument("--model_type", '-model', type=str, default='orig',
                         help="Type of Autoencoder used.", metavar='ae')
+    # Classifier Only
+    parser.add_argument("--add_noise", '-noise', type=bool, default=False,
+                        help="Name of WAND Project.", metavar='n')
+
     args = parser.parse_args()
 
     ''' IMPORTANT: Name the weights such that there's no naming conflict between runs.'''
