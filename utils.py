@@ -21,7 +21,7 @@ def create_model(train_type, ckpt=None, verbose=False, model_type="ae"):
             print("Loading checkpoint ", ckpt)
             pretrained_dict = torch.load(ckpt, map_location='cpu')
             ae.load_state_dict(pretrained_dict)
-        print_model("Encoder", ae.encoder, "Decoder", ae.decoder)
+        #print_model("Encoder", ae.encoder, "Decoder", ae.decoder)
         if torch.cuda.is_available():
             ae = ae.cuda()
             print("Model moved to GPU.")
@@ -34,7 +34,7 @@ def create_model(train_type, ckpt=None, verbose=False, model_type="ae"):
             print("Loading checkpoint ", ckpt)
             pretrained_dict = torch.load(ckpt, map_location='cpu')
             classifier.ae.load_state_dict(pretrained_dict)
-        print_model("Pretrained Encoder", classifier.ae.encoder, "Classifier", classifier.mlp)
+        #print_model("Pretrained Encoder", classifier.ae.encoder, "Classifier", classifier.mlp)
         if torch.cuda.is_available():
             classifier = classifier.cuda()
             print("Model moved to GPU.")

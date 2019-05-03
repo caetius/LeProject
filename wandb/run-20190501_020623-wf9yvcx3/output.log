@@ -1,6 +1,0 @@
-Traceback (most recent call last):
-  File "/Users/Caetius/Desktop/LeProject/DAE/classify.py", line 107, in <module>
-    main()
-  File "/Users/Caetius/Desktop/LeProject/DAE/classify.py", line 31, in main
-    pretrained_weight_name = os.join(file_path, "weights/%s/ae_%d.pkl" % (args.corr_type, args.perc_noise))
-AttributeError: module 'os' has no attribute 'join'

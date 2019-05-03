@@ -32,18 +32,18 @@ def main():
                         help="Percentage of noise to add.", metavar='p')
     parser.add_argument("--corr_type", '-type_of_noise', type=str, default="mask",
                         help="Percentage of noise to add.", metavar='c')
-    parser.add_argument("--verbose", '-verbose_mode', type=bool, default=True,
+    parser.add_argument("--verbose", '-verbose_mode', type=bool, default=False,
                         help="Show images as you feed them in, show reconstructions as they come out.", metavar='b')
     parser.add_argument("--wandb", '-name_of_wandb_proj', type=str, default="le-project",
                         help="Name of WAND Project.", metavar='w1')
-    parser.add_argument("--wandb_on", '-is_wand_on', type=bool, default=False,
+    parser.add_argument("--wandb_on", '-is_wand_on', type=bool, default=True,
                         help="Name of WAND Project.", metavar='w2')
     # possible args: 'orig' (Original AE), 'bn' (Batch Normed version of Original)
-    parser.add_argument("--model_type", '-model', type=str, default='orig',
+    parser.add_argument("--model_type", '-model', type=str, default='sdae_st2',
                         help="Type of Autoencoder used.", metavar='ae')
 
     # Pretraining only
-    parser.add_argument("--ckpt_on", '-load_weights_from_ckpt', type=bool, default=True,
+    parser.add_argument("--ckpt_on", '-load_weights_from_ckpt', type=bool, default=False,
                         help="Whether to log to w&b.", metavar='ckpt')
 
     args = parser.parse_args()
@@ -90,6 +90,7 @@ def main():
             noised = get_torch_vars(noised)
 
             # ============ Forward ============
+            print(ae(noised))
             encoded, outputs = ae(noised)
             loss = criterion(outputs, inputs)
             # ============ Backward ===========

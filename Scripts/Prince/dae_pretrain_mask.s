@@ -4,15 +4,15 @@
 #SBATCH --gres=gpu:p40:1
 #SBATCH --time=48:00:00
 #SBATCH --mem=10GB
-#SBATCH --job-name=dae3
+#SBATCH --job-name=test_job
 #SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=dlc423@nyu.edu
+#SBATCH --mail-user=li471@nyu.edu
 #SBATCH --output=slurm_%j.out
 
 module load python3/intel/3.6.3 cudnn/9.0v7.0.5 cuda/9.0.176
 source ~/pyenv/py3.6.3/bin/activate
 
-export BASE_DIR=~/Shared/LeProject/DAE
+export BASE_DIR=/scratch/li471/LeProject
 export NOISE_TYPE=mask
 export NOISE_PERC=.05
 export VALID=False
