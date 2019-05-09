@@ -29,7 +29,7 @@ def main():
     # Things that rarely change
     parser.add_argument("--wandb", '-name_of_wandb_proj', type=str, default="le-project",
                         help="Name of WAND Project.", metavar='w1')
-    parser.add_argument("--weights_folder", '-folder_name', type=str, default='weights',
+    parser.add_argument("--weights_folder", '-folder_name', type=str, default='weights_rgb',
                         help="Name of weights folder for all weights.", metavar='w')
     parser.add_argument("--epochs", '-num_epochs', type=int, default=40,
                         help="Number of epochs.", metavar='ep')
@@ -42,7 +42,7 @@ def main():
                         help="Name of WAND Project.", metavar='w2')
     parser.add_argument("--ckpt_on", '-load_weights_from_ckpt', type=bool, default=False,
                         help="Whether to load an existing pretrained ckpt, usually to debug.", metavar='ckpt')
-    parser.add_argument("--batch_size", '-num_examples_per_batch', type=int, default=2,
+    parser.add_argument("--batch_size", '-num_examples_per_batch', type=int, default=64,
                         help="Batch size.", metavar='bs')
 
     # Things that change the most
@@ -145,25 +145,25 @@ def main():
             optimizer.step()
 
             # ============ Verbose ============
-            if args.verbose:
+            '''print("Iteration number: ", i, ", Loss: ", loss.data)
+            if args.verbose and i % 100 == 1:
                 print("Iteration number: ", i, ", Loss: ", loss.data)
                 print("--------------------------------------------------")
                 print("L: ", L.shape, ", ab: ", ab.shape, ", downsample: ", downsample.shape)
                 print("AB_hat: ", ab_hat.shape, ", L_hat: ", L_hat.shape)
                 print("AB Labels: ", ab_labels.shape, ", L Labels: ", L_labels.shape)
                 print("AB_hat_4loss: ", ab_hat_4loss.shape, ", L_hat_4loss: ", L_hat_4loss.shape)
-                print("TOTAL LOSS: ", loss.data)
                 print("--------------------------------------------------")
 
                 # Recover output of network as images: Use indices of top-1 logit to identify bins
                 ab_top = torch.topk(ab_hat_4loss.view(-1, args.num_ab_classes**2), k=1, dim=1)[1]
                 L_top = torch.topk(L_hat_4loss.view(-1, args.num_L_classes), k=1, dim=1)[1]
-                print_info(ab_top)
-                print_info(L_top)
+                #print_info(ab_top)
+                #print_info(L_top)
 
                 # Get two dimensions of color classification bins (625 bins)->(25 bins,25 bins)
                 ab_images = ab_top.view(args.batch_size, 1, args.downsample_size, args.downsample_size)
-                ab_images = torch.cat((ab_images % args.num_ab_classes, ab_images / args.num_ab_classes), 1)
+                ab_images = torch.cat((ab_images / args.num_ab_classes, ab_images % args.num_ab_classes), 1)
 
                 # Convert to Float tensor to denormalise
                 ab_images = (ab_images.type(torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor))
@@ -183,7 +183,7 @@ def main():
                 # denormalise color range -> (LAB) -> (RGB)
                 rgb_input_from_downsized = lab_to_rgb(rescale_color(downsample, args.num_ab_classes))
                 grid_imshow(rgb_input, rgb_output, rgb_input_from_downsized, second_label="Original Downsized")
-
+            '''
             # ============ Logging ============
             running_loss_ab += loss_ab.data
             running_loss_L += loss_L.data

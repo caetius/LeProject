@@ -103,41 +103,35 @@ def grid_imshow(img1, img3, img2=None, second_label="Noised"):
 
 
 def normalize(x):
-    x[0, :, :] = x[0, :, :] / 100.
-    x[1, :, :] = (x[1, :, :] + 87.) / (99+87)
-    x[2, :, :] = (x[2, :, :] + 108.) / (95+108)
     return x
 
 def denormalize(x):
-    x[:, 0, :, :] = x[:, 0, :, :] * 100.
-    x[:, 1, :, :] = (x[:, 1, :, :] * (99.+ 87.)) - 87
-    x[:, 2, :, :] = (x[:, 2, :, :] * (95.+ 108.)) - 108
     return x
 
 def rescale_color(x, c_max):
-    x[:, 0, :, :] = x[:, 0, :, :] + 0.5
-    x[:, 1, :, :] = ((x[:, 1, :, :]+ 0.5) * (99.+ 87.)/c_max) - 87
-    x[:, 2, :, :] = ((x[:, 2, :, :] + 0.5) * (95.+ 108.)/c_max) - 108
+    x[:,0,:,:] = (x[:,0,:,:] / 100.)
+    x[:, 1, :, :] = (x[:, 1, :, :] / 10.)
+    x[:, 2, :, :] = (x[:, 2, :, :] /10.)
+
     return x
 
 def lab_to_rgb(images):
-    rgb_imgs = [torch.from_numpy(color.lab2rgb(img.permute(1, 2, 0))).permute(2, 0, 1) for img in images]
+    rgb_imgs = [img for img in images]
     return rgb_imgs
 
 def rgb_to_lab(image, downsample_params=[16,25,100]):
-    #print_info(torch.from_numpy(np.asarray(image)))
 
-    sample = np.transpose(color.rgb2lab(image),(2,0,1)) # converts to lab space
+    sample = np.asarray(image) / 255.
 
     # Get a version of the image that is 16x16 and with the last dimension as the num_channels (as required by resize library)
-    labels = np.array(transform.resize(np.transpose(sample, (1, 2, 0)), (downsample_params[0], downsample_params[0]), preserve_range=True))
+    labels = np.array(transform.resize(sample, (downsample_params[0], downsample_params[0]), preserve_range=True))
+
     # Get labels in discrete space
-    labels[ :, :, 0] = np.digitize(labels[ :, :, 0], np.linspace(0, 101, downsample_params[2]+1)) - 1
-    labels[ :, :, 1] = np.digitize(labels[ :, :, 1], np.linspace(-87, 99, downsample_params[1]+1)) - 1
-    labels[ :, :, 2] = np.digitize(labels[ :, :, 2], np.linspace(-108, 95, downsample_params[1]+1)) - 1
+    labels[ :, :, 0] = np.digitize(labels[ :, :, 0], np.linspace(0., 1.01, downsample_params[2]+1)) - 1
+    labels[ :, :, 1] = np.digitize(labels[ :, :, 1], np.linspace(0., 1.01, downsample_params[1]+1)) - 1
+    labels[ :, :, 2] = np.digitize(labels[ :, :, 2], np.linspace(0., 1.01, downsample_params[1]+1)) - 1
 
     sample = normalize(sample) # normalized image
-    sample = np.transpose(sample, (1,2,0))
 
     return sample, labels # returns labels as
 
