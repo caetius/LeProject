@@ -51,7 +51,7 @@ def main():
                         help="Batch size.", metavar='bs')
 
     # Things that change the most
-    parser.add_argument("--model_type", '-model', type=str, default='resnet',
+    parser.add_argument("--model_type", '-model', type=str, default='simple',
                         help="Type of Autoencoder used.", metavar='mod')
     parser.add_argument("--lr_decay", '-learning_rate_decay', type=float, default=0.5,
                         help="percentage by which the learning rate will decrease after every epoch", metavar='lrd')
@@ -71,7 +71,7 @@ def main():
     if not os.path.exists(os.path.join(file_path, "images")):
         os.mkdir(os.path.join(file_path, 'images'))
 
-    pretrained_weight_name = os.path.join(file_path, "%s/sb_%s_%s.pth" % (args.weights_folder, args.model_type, args.image_space))
+    pretrained_weight_name = os.path.join(file_path, "%s/sb_%s_%s_%s.pth" % (args.weights_folder, args.model_type, args.image_space, str(args.lr_decay)))
 
     #### Setup #################################################################################################################
 
@@ -110,6 +110,9 @@ def main():
         running_loss_ch1 = 0.0
         for i, (inputs, _, downsample) in enumerate(loader_unsup, 0):
             inputs = get_torch_vars(inputs.type(torch.FloatTensor))
+            ''' Save Trained Model '''
+            print('Saving Model after each epoch ', epoch)
+            torch.save(split_brain.state_dict(), pretrained_weight_name)
             ch1 = inputs[:,0,:,:] # one channel
             ch2 = inputs[:,1:3,:,:] # two channels
 
@@ -195,9 +198,6 @@ def main():
                           (epoch + 1, i + 1, (running_loss_ch2+running_loss_ch1) / iterations_to_check))
                 running_loss_ch1 = 0.
                 running_loss_ch2 = 0.
-        ''' Save Trained Model '''
-        print('Saving Model after each epoch ', epoch)
-        torch.save(split_brain.state_dict(), pretrained_weight_name)
 
         ''' Update Learning Rate '''
         scheduler.step()

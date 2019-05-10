@@ -53,8 +53,8 @@ def main():
 
     ''' IMPORTANT: Name the weights such that there's no naming conflict between runs.'''
     file_path = os.path.dirname(os.path.abspath(__file__))
-    pretrained_weight_name = os.path.join(file_path, "%s/sb_%s_%s.pth" % (args.weights_folder, args.model_type, args.image_space))
-    finetuned_weight_name = os.path.join(file_path,"%s/sb_finetuned_%s_%s.pth" % (args.weights_folder, args.model_type, args.image_space))
+    pretrained_weight_name = os.path.join(file_path, "%s/sb_%s_%s_%s.pth" % (args.weights_folder, args.model_type, args.image_space, str(args.lr_decay)))
+    finetuned_weight_name = os.path.join(file_path,"%s/sb_finetuned_%s_%s_%s.pth" % (args.weights_folder, args.model_type, args.image_space, str(args.lr_decay)))
 
     ''' Path to save images'''
     if not os.path.exists(os.path.join(file_path, "images")):
