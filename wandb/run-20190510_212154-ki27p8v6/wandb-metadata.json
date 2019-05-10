@@ -1,0 +1,20 @@
+{
+    "root": "/Users/Caetius/Desktop/LeProject/Split_Brain_AE",
+    "git": {
+        "remote": "https://github.com/caetius/LeProject.git",
+        "commit": "284805ce3fcf538cf06542d98c2fa9ff7ad2e5e1"
+    },
+    "email": "dlcasabuena@gmail.com",
+    "startedAt": "2019-05-10T21:21:54.428968",
+    "host": "MacBook-Pro-8.fios-router.home",
+    "username": "Caetius",
+    "os": "Darwin-18.5.0-x86_64-i386-64bit",
+    "python": "3.6.7",
+    "cpu_count": 8,
+    "program": "/Users/Caetius/Desktop/LeProject/Split_Brain_AE/split_brain_pretrain.py",
+    "args": [],
+    "state": "running",
+    "heartbeatAt": "2019-05-10T21:28:35.938993",
+    "jobType": null,
+    "mode": "run"
+}

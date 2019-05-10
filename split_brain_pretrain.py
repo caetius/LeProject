@@ -123,8 +123,6 @@ def main():
             ch2_labels_unbind = torch.unbind(ch2_labels)
             ch1_labels = downsample[:, 0, :, :].type(torch.cuda.LongTensor if torch.cuda.is_available() else torch.LongTensor).view(args.batch_size, args.downsample_size**2)
             ch1_labels_unbind = torch.unbind(ch1_labels)
-            #print_info("ch2_labels: ", ch2_labels)
-            #print_info("ch1_labels: ", ch1_labels)
 
             # ==== Get predictions for each color class and channel  =====
             ch2_hat_4loss = ch2_hat.permute(0,2,3,1).contiguous().view(args.batch_size, args.downsample_size**2, args.num_classes_ch2**2) #[batch_size*16^2, n_classes_ch2]

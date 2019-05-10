@@ -1,0 +1,13 @@
+diff --git a/split_brain_pretrain.py b/split_brain_pretrain.py
+index ba0824b..64a077d 100644
+--- a/split_brain_pretrain.py
++++ b/split_brain_pretrain.py
+@@ -43,7 +43,7 @@ def main():
+     # Things that change when you put model on GPU or remote cluster
+     parser.add_argument("--verbose", '-verbose_mode', type=bool, default=True,
+                         help="Show images as you feed them in, show reconstructions as they come out.", metavar='b')
+-    parser.add_argument("--wandb_on", '-is_wand_on', type=bool, default=False,
++    parser.add_argument("--wandb_on", '-is_wand_on', type=bool, default=True,
+                         help="Name of WAND Project.", metavar='w2')
+     parser.add_argument("--ckpt_on", '-load_weights_from_ckpt', type=bool, default=False,
+                         help="Whether to load an existing pretrained ckpt, usually to debug.", metavar='ckpt')
