@@ -10,7 +10,6 @@ import wandb
 
 def main():
 
-
     #### Args ################################################################################################################
 
     parser = argparse.ArgumentParser(description="Train Split-Brain Autoencoder")
@@ -37,7 +36,6 @@ def main():
                         help="Name of WAND Project.", metavar='w2')
     parser.add_argument("--batch_size", '-num_examples_per_batch', type=int, default=32,
                         help="Batch size.", metavar='bs')
-
 
     # Things that change the most
     parser.add_argument("--model_type", '-model', type=str, default='alex',

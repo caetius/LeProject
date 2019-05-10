@@ -40,7 +40,7 @@ We include working code for RGB, LAB space, and a distorted LAB space prediction
 - googl: GoogLeNet.
 - simple: A simple net of 5 convolutional layers and batchnorm. ReLU activations.
 
-##Contributing
+## Contributing
 Please, add new models to model.py. Do not override existing models even if the changes are small.
     
 ### Contributor Notes

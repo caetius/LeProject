@@ -16,7 +16,6 @@ import wandb
 # Set random seed for reproducibility
 ''' Set Random Seed '''
 SEED = 87
-np.random.seed(SEED)
 torch.manual_seed(SEED)
 if torch.cuda.is_available():
     torch.cuda.manual_seed(SEED)

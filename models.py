@@ -74,7 +74,6 @@ class AlexNetAE(nn.Module):
         )
 
     def forward(self, x):
-        print(x.shape)
         encoded = self.encoder(x.view(x.shape[0], self.in_channels, 96, 96))
         return encoded
 
