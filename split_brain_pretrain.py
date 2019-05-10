@@ -110,9 +110,7 @@ def main():
         running_loss_ch1 = 0.0
         for i, (inputs, _, downsample) in enumerate(loader_unsup, 0):
             inputs = get_torch_vars(inputs.type(torch.FloatTensor))
-            ''' Save Trained Model '''
-            print('Saving Model after each epoch ', epoch)
-            torch.save(split_brain.state_dict(), pretrained_weight_name)
+
             ch1 = inputs[:,0,:,:] # one channel
             ch2 = inputs[:,1:3,:,:] # two channels
 
@@ -198,6 +196,10 @@ def main():
                           (epoch + 1, i + 1, (running_loss_ch2+running_loss_ch1) / iterations_to_check))
                 running_loss_ch1 = 0.
                 running_loss_ch2 = 0.
+
+        ''' Save Trained Model '''
+        print('Saving Model after each epoch ', epoch)
+        torch.save(split_brain.state_dict(), pretrained_weight_name)
 
         ''' Update Learning Rate '''
         scheduler.step()
