@@ -30,6 +30,7 @@ We include working code for RGB, LAB space, and a distorted LAB space prediction
 
 ### Finetuning only
 - valid: Whether to validate on the validation set.
+- num_samples_per_class: Number of samples per class. 
 
 ### Pretraining only
 - ckpt_on: Whether to load the checkpoint corresponding to current run. This is to continue pretraining on half-pretrained weights, or to use the image display features locally after pretraining.

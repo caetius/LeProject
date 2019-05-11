@@ -1,100 +1,26 @@
-2019-05-10 17:21:54,910 DEBUG   MainThread:27759 [wandb_config.py:_load_defaults():81] no defaults not found in config-defaults.yaml
-2019-05-10 17:21:54,917 DEBUG   MainThread:27759 [cmd.py:execute():722] Popen(['git', 'cat-file', '--batch-check'], cwd=/Users/Caetius/Desktop/LeProject/Split_Brain_AE, universal_newlines=False, shell=None)
-2019-05-10 17:21:54,930 DEBUG   MainThread:27759 [cmd.py:execute():722] Popen(['git', 'rev-parse', '--show-toplevel'], cwd=/Users/Caetius/Desktop/LeProject/Split_Brain_AE, universal_newlines=False, shell=None)
-2019-05-10 17:21:54,951 DEBUG   MainThread:27759 [run_manager.py:__init__():452] Initialized sync for le-project/ki27p8v6
-2019-05-10 17:21:54,956 INFO    MainThread:27759 [run_manager.py:wrap_existing_process():986] wrapping existing process 27747
-2019-05-10 17:21:54,976 DEBUG   MainThread:27759 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): pypi.org:443
-2019-05-10 17:21:55,027 DEBUG   MainThread:27759 [connectionpool.py:_make_request():393] https://pypi.org:443 "GET /pypi/wandb/json HTTP/1.1" 200 31060
-2019-05-10 17:21:55,038 INFO    MainThread:27759 [run_manager.py:init_run():810] system metrics and metadata threads started
-2019-05-10 17:21:55,039 INFO    MainThread:27759 [run_manager.py:init_run():844] upserting run before process can begin, waiting at most 10 seconds
-2019-05-10 17:21:55,175 DEBUG   Thread-13 :27759 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): api.wandb.ai:443
-2019-05-10 17:21:55,303 DEBUG   Thread-13 :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 357
-2019-05-10 17:21:55,307 INFO    Thread-13 :27759 [run_manager.py:_upsert_run():900] saving patches
-2019-05-10 17:21:55,307 DEBUG   Thread-13 :27759 [cmd.py:execute():722] Popen(['git', 'rev-parse', '--show-toplevel'], cwd=/Users/Caetius/Desktop/LeProject/Split_Brain_AE, universal_newlines=False, shell=None)
-2019-05-10 17:21:55,318 DEBUG   Thread-13 :27759 [cmd.py:execute():722] Popen(['git', 'diff', '--cached', '--abbrev=40', '--full-index', '--raw'], cwd=/Users/Caetius/Desktop/LeProject/Split_Brain_AE, universal_newlines=False, shell=None)
-2019-05-10 17:21:55,329 DEBUG   Thread-13 :27759 [cmd.py:execute():722] Popen(['git', 'diff', '--abbrev=40', '--full-index', '--raw'], cwd=/Users/Caetius/Desktop/LeProject/Split_Brain_AE, universal_newlines=False, shell=None)
-2019-05-10 17:21:55,341 DEBUG   Thread-13 :27759 [cmd.py:execute():722] Popen(['git', 'version'], cwd=/Users/Caetius/Desktop/LeProject/Split_Brain_AE, universal_newlines=False, shell=None)
-2019-05-10 17:21:55,363 INFO    Thread-13 :27759 [run_manager.py:_upsert_run():902] saving pip packages
-2019-05-10 17:21:55,363 INFO    Thread-13 :27759 [run_manager.py:_upsert_run():904] initializing streaming files api
-2019-05-10 17:21:55,364 INFO    Thread-13 :27759 [run_manager.py:_upsert_run():911] unblocking file change observer, beginning sync with W&B servers
-2019-05-10 17:21:55,364 INFO    MainThread:27759 [run_manager.py:wrap_existing_process():1003] informing user process we are ready to proceed
-2019-05-10 17:21:55,364 INFO    MainThread:27759 [run_manager.py:_sync_etc():1059] entering loop for messages from user process
-2019-05-10 17:21:55,919 INFO    Thread-2  :27759 [run_manager.py:_on_file_created():576] file/dir created: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/diff.patch
-2019-05-10 17:21:55,921 INFO    Thread-2  :27759 [run_manager.py:_on_file_created():576] file/dir created: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
-2019-05-10 17:21:55,922 INFO    Thread-2  :27759 [run_manager.py:_on_file_created():576] file/dir created: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/requirements.txt
-2019-05-10 17:21:55,922 INFO    Thread-2  :27759 [run_manager.py:_on_file_created():576] file/dir created: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/config.yaml
-2019-05-10 17:21:55,932 DEBUG   Thread-2  :27759 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): api.wandb.ai:443
-2019-05-10 17:21:56,029 DEBUG   Thread-2  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 1058
-2019-05-10 17:21:56,035 DEBUG   Thread-14 :27759 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): api.wandb.ai:443
-2019-05-10 17:21:56,123 DEBUG   Thread-14 :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 747
-2019-05-10 17:21:56,151 DEBUG   Thread-14 :27759 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): storage.googleapis.com:443
-2019-05-10 17:21:56,571 DEBUG   Thread-14 :27759 [connectionpool.py:_make_request():393] https://storage.googleapis.com:443 "PUT /wandb-production.appspot.com/dlc423/le-project/ki27p8v6/config.yaml?Expires=1557523376&GoogleAccessId=gorilla-cloud-storage%40wandb-production.iam.gserviceaccount.com&Signature=ANny4qQ9Q3AAsLuuhP3KEUAoogQAQfhWVYpsMjbwEPQAIaJllTH3VPRm5WZV6UcoBwzFIl0pgC5mK88ToSsHrAk4Xt8NoYOY%2BwrM08JaaCYlF1k9y%2FbTRA4Ft5vrG%2B%2B%2F08KYeNpqYsnmRnkAeJMzr5zVqAlfVWuRVE84p9pEB%2Fq79MaZ%2B94h7%2FKnUtZf85Hpp56FI9vZmaMWzWUztXE9grbtxXsMed0F3mkggIZrAYOEW149HFHRvfQ3RFNgAPNOJPd6G8aVoUj71qtsjd7Dkv%2FePsJKglOO25QmHqK3Zvw7K5Ck8egv51KLF0tKYdYS5hwBpmnC%2BN0FGDnfkwsRgA%3D%3D HTTP/1.1" 200 0
-2019-05-10 17:21:57,484 DEBUG   Thread-6  :27759 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): api.wandb.ai:443
-2019-05-10 17:21:57,609 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
-2019-05-10 17:22:11,969 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
-2019-05-10 17:22:24,012 INFO    Thread-2  :27759 [run_manager.py:_on_file_created():576] file/dir created: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-events.jsonl
-2019-05-10 17:22:24,094 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
-2019-05-10 17:22:28,024 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
-2019-05-10 17:22:44,090 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
-2019-05-10 17:22:54,189 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
-2019-05-10 17:22:55,111 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-events.jsonl
-2019-05-10 17:22:55,198 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
-2019-05-10 17:23:00,125 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
-2019-05-10 17:23:16,164 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
-2019-05-10 17:23:25,191 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-events.jsonl
-2019-05-10 17:23:25,267 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
-2019-05-10 17:23:32,214 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
-2019-05-10 17:23:47,258 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
-2019-05-10 17:23:55,338 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
-2019-05-10 17:23:56,286 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-events.jsonl
-2019-05-10 17:23:56,339 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
-2019-05-10 17:24:03,310 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
-2019-05-10 17:24:19,362 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
-2019-05-10 17:24:26,406 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
-2019-05-10 17:24:27,382 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-events.jsonl
-2019-05-10 17:24:27,394 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
-2019-05-10 17:24:35,403 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
-2019-05-10 17:24:51,458 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
-2019-05-10 17:24:57,473 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
-2019-05-10 17:24:57,478 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-events.jsonl
-2019-05-10 17:25:07,510 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
-2019-05-10 17:25:23,552 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
-2019-05-10 17:25:27,534 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
-2019-05-10 17:25:28,533 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
-2019-05-10 17:25:28,569 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-events.jsonl
-2019-05-10 17:25:39,596 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
-2019-05-10 17:25:55,654 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
-2019-05-10 17:25:58,601 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
-2019-05-10 17:25:59,605 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
-2019-05-10 17:25:59,661 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-events.jsonl
-2019-05-10 17:26:11,695 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
-2019-05-10 17:26:27,741 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
-2019-05-10 17:26:29,676 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
-2019-05-10 17:26:29,746 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-events.jsonl
-2019-05-10 17:26:29,748 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
-2019-05-10 17:26:43,796 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
-2019-05-10 17:26:59,817 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
-2019-05-10 17:26:59,840 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
-2019-05-10 17:27:00,814 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
-2019-05-10 17:27:00,842 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-events.jsonl
-2019-05-10 17:27:15,902 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
-2019-05-10 17:27:30,882 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
-2019-05-10 17:27:31,952 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-events.jsonl
-2019-05-10 17:27:31,956 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
-2019-05-10 17:27:32,023 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
-2019-05-10 17:27:48,008 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
-2019-05-10 17:28:02,062 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-events.jsonl
-2019-05-10 17:28:02,083 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
-2019-05-10 17:28:02,918 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
-2019-05-10 17:28:04,071 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
-2019-05-10 17:28:20,128 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
-2019-05-10 17:28:33,169 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-events.jsonl
-2019-05-10 17:28:33,534 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
-2019-05-10 17:28:34,244 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
-2019-05-10 17:28:36,175 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
-2019-05-10 17:28:40,080 INFO    MainThread:27759 [run_manager.py:_sync_etc():1110] process received interrupt signal, shutting down
-2019-05-10 17:28:40,081 INFO    MainThread:27759 [run_manager.py:_sync_etc():1163] closing log streams and sending exitcode to W&B
-2019-05-10 17:28:40,082 INFO    MainThread:27759 [run_manager.py:shutdown():918] shutting down system stats and metadata service
-2019-05-10 17:28:40,187 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-events.jsonl
-wn system stats and metadata service
-2019-05-10 17:28:40,187 INFO    Thread-2  :27759 [ki27p8v6:run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-events.jsonl
+2019-05-11 19:13:12,409 DEBUG   MainThread:53554 [wandb_config.py:_load_defaults():81] no defaults not found in config-defaults.yaml
+2019-05-11 19:13:12,415 DEBUG   MainThread:53554 [cmd.py:execute():722] Popen(['git', 'cat-file', '--batch-check'], cwd=/Users/Caetius/Desktop/LeProject/Split_Brain_AE, universal_newlines=False, shell=None)
+2019-05-11 19:13:12,425 DEBUG   MainThread:53554 [cmd.py:execute():722] Popen(['git', 'rev-parse', '--show-toplevel'], cwd=/Users/Caetius/Desktop/LeProject/Split_Brain_AE, universal_newlines=False, shell=None)
+2019-05-11 19:13:12,442 DEBUG   MainThread:53554 [run_manager.py:__init__():452] Initialized sync for le-project/brzcyepg
+2019-05-11 19:13:12,446 INFO    MainThread:53554 [run_manager.py:wrap_existing_process():986] wrapping existing process 53542
+2019-05-11 19:13:12,462 DEBUG   MainThread:53554 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): pypi.org:443
+2019-05-11 19:13:12,500 DEBUG   MainThread:53554 [connectionpool.py:_make_request():393] https://pypi.org:443 "GET /pypi/wandb/json HTTP/1.1" 200 31060
+2019-05-11 19:13:12,511 INFO    MainThread:53554 [run_manager.py:init_run():810] system metrics and metadata threads started
+2019-05-11 19:13:12,511 INFO    MainThread:53554 [run_manager.py:init_run():844] upserting run before process can begin, waiting at most 10 seconds
+2019-05-11 19:13:12,518 DEBUG   Thread-13 :53554 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): api.wandb.ai:443
+2019-05-11 19:13:12,683 DEBUG   Thread-13 :53554 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 356
+2019-05-11 19:13:12,685 INFO    Thread-13 :53554 [run_manager.py:_upsert_run():900] saving patches
+2019-05-11 19:13:12,686 DEBUG   Thread-13 :53554 [cmd.py:execute():722] Popen(['git', 'rev-parse', '--show-toplevel'], cwd=/Users/Caetius/Desktop/LeProject/Split_Brain_AE, universal_newlines=False, shell=None)
+2019-05-11 19:13:12,698 DEBUG   Thread-13 :53554 [cmd.py:execute():722] Popen(['git', 'diff', '--cached', '--abbrev=40', '--full-index', '--raw'], cwd=/Users/Caetius/Desktop/LeProject/Split_Brain_AE, universal_newlines=False, shell=None)
+2019-05-11 19:13:12,709 DEBUG   Thread-13 :53554 [cmd.py:execute():722] Popen(['git', 'diff', '--abbrev=40', '--full-index', '--raw'], cwd=/Users/Caetius/Desktop/LeProject/Split_Brain_AE, universal_newlines=False, shell=None)
+2019-05-11 19:13:12,723 DEBUG   Thread-13 :53554 [cmd.py:execute():722] Popen(['git', 'version'], cwd=/Users/Caetius/Desktop/LeProject/Split_Brain_AE, universal_newlines=False, shell=None)
+2019-05-11 19:13:12,759 INFO    Thread-13 :53554 [run_manager.py:_upsert_run():902] saving pip packages
+2019-05-11 19:13:12,761 INFO    Thread-13 :53554 [run_manager.py:_upsert_run():904] initializing streaming files api
+2019-05-11 19:13:12,762 INFO    Thread-13 :53554 [run_manager.py:_upsert_run():911] unblocking file change observer, beginning sync with W&B servers
+2019-05-11 19:13:12,762 INFO    MainThread:53554 [run_manager.py:wrap_existing_process():1003] informing user process we are ready to proceed
+2019-05-11 19:13:12,763 INFO    MainThread:53554 [run_manager.py:_sync_etc():1059] entering loop for messages from user process
+2019-05-11 19:13:12,967 INFO    MainThread:53554 [run_manager.py:_sync_etc():1110] process received interrupt signal, shutting down
+2019-05-11 19:13:12,967 INFO    MainThread:53554 [run_manager.py:_sync_etc():1163] closing log streams and sending exitcode to W&B
+2019-05-11 19:13:12,967 INFO    MainThread:53554 [run_manager.py:shutdown():918] shutting down system stats and metadata service
+sync_etc():1163] closing log streams and sending exitcode to W&B
+2019-05-11 19:13:12,967 INFO    MainThread:53554 [brzcyepg:run_manager.py:shutdown():918] shutting down system stats and metadata service

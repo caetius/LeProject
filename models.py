@@ -3,9 +3,6 @@ import torch
 
 ''' Split-Brain Code '''
 
-N_HID = 1048
-
-
 class SimpleAE(nn.Module):
 
     def __init__(self, in_channels, out_channels):
@@ -368,16 +365,10 @@ class SplitBrain(nn.Module):
 
 ''' Train a classifier consisting of the AlexNet plus a resizing linear layer'''
 class SBNetClassifier(nn.Module):
-    def __init__(self, encoder="alex", classifier="mlp", num_ch2=25, num_ch1=100):
+    def __init__(self, encoder="alex", classifier="mlp", num_ch2=10, num_ch1=100, downsample_size=12):
         super(SBNetClassifier, self).__init__()
         self.sp = SplitBrain(encoder=encoder, num_ch2=num_ch2, num_ch1=num_ch1)
-        n_in = num_ch2**2+num_ch1
-        if encoder == "alex":
-            n_in *= 11**2
-        elif encoder == "googl":
-            n_in *= 7**2
-        elif encoder == "simple":
-            n_in *= 6**2
+        n_in = (num_ch2**2+num_ch1)*downsample_size**2
         if classifier == "mlp":
             self.classifier = MLPClassifier(n_in,1000)
         elif classifier == "shallow":
@@ -387,9 +378,8 @@ class SBNetClassifier(nn.Module):
 
     def forward(self, x):
         ch2, ch1 = x
-        encoded_ch1 = self.sp.ch2_net(ch2.view(ch2.shape[0], self.sp.ch2_net.in_channels, 96, 96))
-        encoded_ch2 = self.sp.ch1_net(ch1.view(ch1.shape[0], self.sp.ch1_net.in_channels, 96, 96))
-        full_emb = torch.cat((encoded_ch2, encoded_ch1), 1)
+        ch2_hat, ch1_hat = self.sp((ch2.view(ch2.shape[0], self.sp.ch2_net.in_channels, 96, 96), ch1.view(ch1.shape[0], self.sp.ch1_net.in_channels, 96, 96)))
+        full_emb = torch.cat((ch2_hat, ch1_hat), 1)
         linear = self.classifier(full_emb.view(full_emb.shape[0], -1))
         return linear
 
@@ -404,6 +394,7 @@ class MLPClassifier(nn.Module):
 
         super(MLPClassifier, self).__init__()
 
+        N_HID = 1000
         self.out_channels = n_out
         self.classifier = nn.Sequential(
             nn.Linear(n_in, N_HID),

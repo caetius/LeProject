@@ -1,0 +1,930 @@
+Split Brain Parameters- AB Net:  389632
+Split Brain Parameters- ch1 Net:  389440
+Classifier Params:  28801000
+Total Finetuning Params:  29580072
+============== Pretrained encoder ==============
+SplitBrain(
+  (ch2_net): SimpleAE(
+    (encoder): Sequential(
+      (0): Conv2d(2, 12, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+      (1): BatchNorm2d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU()
+      (3): Conv2d(12, 24, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+      (4): BatchNorm2d(24, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (5): ReLU()
+      (6): Conv2d(24, 48, kernel_size=(5, 5), stride=(1, 1))
+      (7): BatchNorm2d(48, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (8): ReLU()
+      (9): Conv2d(48, 96, kernel_size=(5, 5), stride=(1, 1))
+      (10): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (11): ReLU()
+      (12): Conv2d(96, 100, kernel_size=(5, 5), stride=(1, 1))
+    )
+  )
+  (ch1_net): SimpleAE(
+    (encoder): Sequential(
+      (0): Conv2d(1, 12, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+      (1): BatchNorm2d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU()
+      (3): Conv2d(12, 24, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+      (4): BatchNorm2d(24, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (5): ReLU()
+      (6): Conv2d(24, 48, kernel_size=(5, 5), stride=(1, 1))
+      (7): BatchNorm2d(48, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (8): ReLU()
+      (9): Conv2d(48, 96, kernel_size=(5, 5), stride=(1, 1))
+      (10): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (11): ReLU()
+      (12): Conv2d(96, 100, kernel_size=(5, 5), stride=(1, 1))
+    )
+  )
+)
+============== shallow ==============
+ShallowClassifier(
+  (classifier): Linear(in_features=28800, out_features=1000, bias=True)
+)
+Loading checkpoint  /Users/Caetius/Desktop/LeProject/Split_Brain_AE/weights_64/sb_simple_rgb_0.5.pth
+Iteration number:  0 , Loss:  tensor(9.9071)
+[1,     1] loss: 9.907
+Iteration number:  1 , Loss:  tensor(19.4167)
+[1,     2] loss: 19.417
+Iteration number:  2 , Loss:  tensor(26.1738)
+[1,     3] loss: 26.174
+Iteration number:  3 , Loss:  tensor(27.4076)
+[1,     4] loss: 27.408
+Iteration number:  4 , Loss:  tensor(28.9250)
+[1,     5] loss: 28.925
+Iteration number:  5 , Loss:  tensor(29.6746)
+[1,     6] loss: 29.675
+Iteration number:  6 , Loss:  tensor(28.4158)
+[1,     7] loss: 28.416
+Iteration number:  7 , Loss:  tensor(31.5662)
+[1,     8] loss: 31.566
+Iteration number:  8 , Loss:  tensor(29.4437)
+[1,     9] loss: 29.444
+Iteration number:  9 , Loss:  tensor(29.1440)
+[1,    10] loss: 29.144
+Iteration number:  10 , Loss:  tensor(27.7127)
+[1,    11] loss: 27.713
+Iteration number:  11 , Loss:  tensor(24.0856)
+[1,    12] loss: 24.086
+Iteration number:  12 , Loss:  tensor(27.8993)
+[1,    13] loss: 27.899
+Iteration number:  13 , Loss:  tensor(25.3457)
+[1,    14] loss: 25.346
+Iteration number:  14 , Loss:  tensor(25.2474)
+[1,    15] loss: 25.247
+Iteration number:  15 , Loss:  tensor(25.0479)
+[1,    16] loss: 25.048
+Iteration number:  16 , Loss:  tensor(20.4561)
+[1,    17] loss: 20.456
+Iteration number:  17 , Loss:  tensor(22.0959)
+[1,    18] loss: 22.096
+Iteration number:  18 , Loss:  tensor(20.1219)
+[1,    19] loss: 20.122
+Iteration number:  19 , Loss:  tensor(21.5984)
+[1,    20] loss: 21.598
+Iteration number:  20 , Loss:  tensor(21.3829)
+[1,    21] loss: 21.383
+Iteration number:  21 , Loss:  tensor(19.4837)
+[1,    22] loss: 19.484
+Iteration number:  22 , Loss:  tensor(18.6055)
+[1,    23] loss: 18.605
+Iteration number:  23 , Loss:  tensor(18.5267)
+[1,    24] loss: 18.527
+Iteration number:  24 , Loss:  tensor(17.2992)
+[1,    25] loss: 17.299
+Iteration number:  25 , Loss:  tensor(17.5392)
+[1,    26] loss: 17.539
+Iteration number:  26 , Loss:  tensor(14.5924)
+[1,    27] loss: 14.592
+Iteration number:  27 , Loss:  tensor(16.4699)
+[1,    28] loss: 16.470
+Iteration number:  28 , Loss:  tensor(15.5762)
+[1,    29] loss: 15.576
+Iteration number:  29 , Loss:  tensor(14.9409)
+[1,    30] loss: 14.941
+Iteration number:  30 , Loss:  tensor(15.4321)
+[1,    31] loss: 15.432
+Iteration number:  31 , Loss:  tensor(15.9051)
+[1,    32] loss: 15.905
+Iteration number:  32 , Loss:  tensor(15.5976)
+[1,    33] loss: 15.598
+Iteration number:  33 , Loss:  tensor(16.8345)
+[1,    34] loss: 16.834
+Iteration number:  34 , Loss:  tensor(14.6220)
+[1,    35] loss: 14.622
+Iteration number:  35 , Loss:  tensor(12.0992)
+[1,    36] loss: 12.099
+Iteration number:  36 , Loss:  tensor(13.1372)
+[1,    37] loss: 13.137
+Iteration number:  37 , Loss:  tensor(14.5982)
+[1,    38] loss: 14.598
+Iteration number:  38 , Loss:  tensor(12.9060)
+[1,    39] loss: 12.906
+Iteration number:  39 , Loss:  tensor(12.5149)
+[1,    40] loss: 12.515
+Iteration number:  40 , Loss:  tensor(12.4769)
+[1,    41] loss: 12.477
+Iteration number:  41 , Loss:  tensor(11.6329)
+[1,    42] loss: 11.633
+Iteration number:  42 , Loss:  tensor(11.0597)
+[1,    43] loss: 11.060
+Iteration number:  43 , Loss:  tensor(10.9966)
+[1,    44] loss: 10.997
+Iteration number:  44 , Loss:  tensor(11.2405)
+[1,    45] loss: 11.240
+Iteration number:  45 , Loss:  tensor(11.1998)
+[1,    46] loss: 11.200
+Iteration number:  46 , Loss:  tensor(11.3097)
+[1,    47] loss: 11.310
+Iteration number:  47 , Loss:  tensor(9.6771)
+[1,    48] loss: 9.677
+Iteration number:  48 , Loss:  tensor(10.5491)
+[1,    49] loss: 10.549
+Iteration number:  49 , Loss:  tensor(9.8468)
+[1,    50] loss: 9.847
+Iteration number:  50 , Loss:  tensor(9.9853)
+[1,    51] loss: 9.985
+Iteration number:  51 , Loss:  tensor(9.9854)
+[1,    52] loss: 9.985
+Iteration number:  52 , Loss:  tensor(10.6102)
+[1,    53] loss: 10.610
+Iteration number:  53 , Loss:  tensor(11.3857)
+[1,    54] loss: 11.386
+Iteration number:  54 , Loss:  tensor(9.3833)
+[1,    55] loss: 9.383
+Iteration number:  55 , Loss:  tensor(10.4257)
+[1,    56] loss: 10.426
+Iteration number:  56 , Loss:  tensor(9.6570)
+[1,    57] loss: 9.657
+Iteration number:  57 , Loss:  tensor(8.6391)
+[1,    58] loss: 8.639
+Iteration number:  58 , Loss:  tensor(9.7132)
+[1,    59] loss: 9.713
+Iteration number:  59 , Loss:  tensor(9.9318)
+[1,    60] loss: 9.932
+Iteration number:  60 , Loss:  tensor(9.0248)
+[1,    61] loss: 9.025
+Iteration number:  61 , Loss:  tensor(9.8028)
+[1,    62] loss: 9.803
+Iteration number:  62 , Loss:  tensor(8.8324)
+[1,    63] loss: 8.832
+Iteration number:  63 , Loss:  tensor(8.6143)
+[1,    64] loss: 8.614
+Iteration number:  64 , Loss:  tensor(10.5338)
+[1,    65] loss: 10.534
+Iteration number:  65 , Loss:  tensor(9.0054)
+[1,    66] loss: 9.005
+Iteration number:  66 , Loss:  tensor(9.3583)
+[1,    67] loss: 9.358
+Iteration number:  67 , Loss:  tensor(9.5057)
+[1,    68] loss: 9.506
+Iteration number:  68 , Loss:  tensor(8.9406)
+[1,    69] loss: 8.941
+Iteration number:  69 , Loss:  tensor(8.4023)
+[1,    70] loss: 8.402
+Iteration number:  70 , Loss:  tensor(9.5141)
+[1,    71] loss: 9.514
+Iteration number:  71 , Loss:  tensor(9.3462)
+[1,    72] loss: 9.346
+Iteration number:  72 , Loss:  tensor(8.5468)
+[1,    73] loss: 8.547
+Iteration number:  73 , Loss:  tensor(8.8452)
+[1,    74] loss: 8.845
+Iteration number:  74 , Loss:  tensor(8.0578)
+[1,    75] loss: 8.058
+Iteration number:  75 , Loss:  tensor(8.5716)
+[1,    76] loss: 8.572
+Iteration number:  76 , Loss:  tensor(8.6667)
+[1,    77] loss: 8.667
+Iteration number:  77 , Loss:  tensor(8.5627)
+[1,    78] loss: 8.563
+Iteration number:  78 , Loss:  tensor(9.1297)
+[1,    79] loss: 9.130
+Iteration number:  79 , Loss:  tensor(8.1363)
+[1,    80] loss: 8.136
+Iteration number:  80 , Loss:  tensor(8.2196)
+[1,    81] loss: 8.220
+Iteration number:  81 , Loss:  tensor(8.7756)
+[1,    82] loss: 8.776
+Iteration number:  82 , Loss:  tensor(9.7321)
+[1,    83] loss: 9.732
+Iteration number:  83 , Loss:  tensor(9.3948)
+[1,    84] loss: 9.395
+Iteration number:  84 , Loss:  tensor(8.7765)
+[1,    85] loss: 8.777
+Iteration number:  85 , Loss:  tensor(8.8200)
+[1,    86] loss: 8.820
+Iteration number:  86 , Loss:  tensor(7.7380)
+[1,    87] loss: 7.738
+Iteration number:  87 , Loss:  tensor(8.7523)
+[1,    88] loss: 8.752
+Iteration number:  88 , Loss:  tensor(9.1845)
+[1,    89] loss: 9.184
+Iteration number:  89 , Loss:  tensor(8.3894)
+[1,    90] loss: 8.389
+Iteration number:  90 , Loss:  tensor(8.6763)
+[1,    91] loss: 8.676
+Iteration number:  91 , Loss:  tensor(7.8928)
+[1,    92] loss: 7.893
+Iteration number:  92 , Loss:  tensor(8.8075)
+[1,    93] loss: 8.808
+Iteration number:  93 , Loss:  tensor(8.3039)
+[1,    94] loss: 8.304
+Iteration number:  94 , Loss:  tensor(9.6374)
+[1,    95] loss: 9.637
+Iteration number:  95 , Loss:  tensor(7.6462)
+[1,    96] loss: 7.646
+Iteration number:  96 , Loss:  tensor(7.7510)
+[1,    97] loss: 7.751
+Iteration number:  97 , Loss:  tensor(7.7811)
+[1,    98] loss: 7.781
+Iteration number:  98 , Loss:  tensor(7.9259)
+[1,    99] loss: 7.926
+Iteration number:  99 , Loss:  tensor(8.6471)
+[1,   100] loss: 8.647
+Iteration number:  100 , Loss:  tensor(7.7794)
+[1,   101] loss: 7.779
+Iteration number:  101 , Loss:  tensor(7.8838)
+[1,   102] loss: 7.884
+Iteration number:  102 , Loss:  tensor(8.1176)
+[1,   103] loss: 8.118
+Iteration number:  103 , Loss:  tensor(8.6467)
+[1,   104] loss: 8.647
+Iteration number:  104 , Loss:  tensor(8.1105)
+[1,   105] loss: 8.111
+Iteration number:  105 , Loss:  tensor(8.1031)
+[1,   106] loss: 8.103
+Iteration number:  106 , Loss:  tensor(8.2253)
+[1,   107] loss: 8.225
+Iteration number:  107 , Loss:  tensor(7.8166)
+[1,   108] loss: 7.817
+Iteration number:  108 , Loss:  tensor(8.0530)
+[1,   109] loss: 8.053
+Iteration number:  109 , Loss:  tensor(7.4758)
+[1,   110] loss: 7.476
+Iteration number:  110 , Loss:  tensor(7.5784)
+[1,   111] loss: 7.578
+Iteration number:  111 , Loss:  tensor(8.2705)
+[1,   112] loss: 8.270
+Iteration number:  112 , Loss:  tensor(7.4065)
+[1,   113] loss: 7.406
+Iteration number:  113 , Loss:  tensor(7.9564)
+[1,   114] loss: 7.956
+Iteration number:  114 , Loss:  tensor(7.7694)
+[1,   115] loss: 7.769
+Iteration number:  115 , Loss:  tensor(7.9907)
+[1,   116] loss: 7.991
+Iteration number:  116 , Loss:  tensor(8.2371)
+[1,   117] loss: 8.237
+Iteration number:  117 , Loss:  tensor(7.8925)
+[1,   118] loss: 7.893
+Iteration number:  118 , Loss:  tensor(7.1938)
+[1,   119] loss: 7.194
+Iteration number:  119 , Loss:  tensor(7.1299)
+[1,   120] loss: 7.130
+Iteration number:  120 , Loss:  tensor(8.4943)
+[1,   121] loss: 8.494
+Iteration number:  121 , Loss:  tensor(8.0337)
+[1,   122] loss: 8.034
+Iteration number:  122 , Loss:  tensor(7.4869)
+[1,   123] loss: 7.487
+Iteration number:  123 , Loss:  tensor(8.2254)
+[1,   124] loss: 8.225
+Iteration number:  124 , Loss:  tensor(7.9506)
+[1,   125] loss: 7.951
+Iteration number:  125 , Loss:  tensor(7.5282)
+[1,   126] loss: 7.528
+Iteration number:  126 , Loss:  tensor(7.6572)
+[1,   127] loss: 7.657
+Iteration number:  127 , Loss:  tensor(7.0995)
+[1,   128] loss: 7.100
+Iteration number:  128 , Loss:  tensor(7.5145)
+[1,   129] loss: 7.515
+Iteration number:  129 , Loss:  tensor(7.9016)
+[1,   130] loss: 7.902
+Iteration number:  130 , Loss:  tensor(7.2320)
+[1,   131] loss: 7.232
+Iteration number:  131 , Loss:  tensor(7.6157)
+[1,   132] loss: 7.616
+Iteration number:  132 , Loss:  tensor(7.0071)
+[1,   133] loss: 7.007
+Iteration number:  133 , Loss:  tensor(7.6012)
+[1,   134] loss: 7.601
+Iteration number:  134 , Loss:  tensor(8.0700)
+[1,   135] loss: 8.070
+Iteration number:  135 , Loss:  tensor(7.3205)
+[1,   136] loss: 7.321
+Iteration number:  136 , Loss:  tensor(7.2077)
+[1,   137] loss: 7.208
+Iteration number:  137 , Loss:  tensor(7.3350)
+[1,   138] loss: 7.335
+Iteration number:  138 , Loss:  tensor(6.8993)
+[1,   139] loss: 6.899
+Iteration number:  139 , Loss:  tensor(7.3427)
+[1,   140] loss: 7.343
+Iteration number:  140 , Loss:  tensor(7.9250)
+[1,   141] loss: 7.925
+Iteration number:  141 , Loss:  tensor(7.4845)
+[1,   142] loss: 7.485
+Iteration number:  142 , Loss:  tensor(7.5926)
+[1,   143] loss: 7.593
+Iteration number:  143 , Loss:  tensor(7.2234)
+[1,   144] loss: 7.223
+Iteration number:  144 , Loss:  tensor(7.3630)
+[1,   145] loss: 7.363
+Iteration number:  145 , Loss:  tensor(7.7172)
+[1,   146] loss: 7.717
+Iteration number:  146 , Loss:  tensor(7.2950)
+[1,   147] loss: 7.295
+Iteration number:  147 , Loss:  tensor(7.7281)
+[1,   148] loss: 7.728
+Iteration number:  148 , Loss:  tensor(8.3385)
+[1,   149] loss: 8.338
+Iteration number:  149 , Loss:  tensor(6.7421)
+[1,   150] loss: 6.742
+Iteration number:  150 , Loss:  tensor(7.4798)
+[1,   151] loss: 7.480
+Iteration number:  151 , Loss:  tensor(7.2243)
+[1,   152] loss: 7.224
+Iteration number:  152 , Loss:  tensor(7.5531)
+[1,   153] loss: 7.553
+Iteration number:  153 , Loss:  tensor(7.0949)
+[1,   154] loss: 7.095
+Iteration number:  154 , Loss:  tensor(7.5448)
+[1,   155] loss: 7.545
+Iteration number:  155 , Loss:  tensor(7.1170)
+[1,   156] loss: 7.117
+Iteration number:  156 , Loss:  tensor(7.1875)
+[1,   157] loss: 7.188
+Iteration number:  157 , Loss:  tensor(7.4826)
+[1,   158] loss: 7.483
+Iteration number:  158 , Loss:  tensor(7.3661)
+[1,   159] loss: 7.366
+Iteration number:  159 , Loss:  tensor(7.1254)
+[1,   160] loss: 7.125
+Iteration number:  160 , Loss:  tensor(7.2211)
+[1,   161] loss: 7.221
+Iteration number:  161 , Loss:  tensor(7.1980)
+[1,   162] loss: 7.198
+Iteration number:  162 , Loss:  tensor(7.1722)
+[1,   163] loss: 7.172
+Iteration number:  163 , Loss:  tensor(7.4690)
+[1,   164] loss: 7.469
+Iteration number:  164 , Loss:  tensor(6.9695)
+[1,   165] loss: 6.970
+Iteration number:  165 , Loss:  tensor(7.5713)
+[1,   166] loss: 7.571
+Iteration number:  166 , Loss:  tensor(7.6453)
+[1,   167] loss: 7.645
+Iteration number:  167 , Loss:  tensor(7.4615)
+[1,   168] loss: 7.462
+Iteration number:  168 , Loss:  tensor(7.5480)
+[1,   169] loss: 7.548
+Iteration number:  169 , Loss:  tensor(7.3737)
+[1,   170] loss: 7.374
+Iteration number:  170 , Loss:  tensor(7.0587)
+[1,   171] loss: 7.059
+Iteration number:  171 , Loss:  tensor(7.1188)
+[1,   172] loss: 7.119
+Iteration number:  172 , Loss:  tensor(7.4085)
+[1,   173] loss: 7.409
+Iteration number:  173 , Loss:  tensor(7.6169)
+[1,   174] loss: 7.617
+Iteration number:  174 , Loss:  tensor(6.9570)
+[1,   175] loss: 6.957
+Iteration number:  175 , Loss:  tensor(7.6066)
+[1,   176] loss: 7.607
+Iteration number:  176 , Loss:  tensor(7.1628)
+[1,   177] loss: 7.163
+Iteration number:  177 , Loss:  tensor(7.0636)
+[1,   178] loss: 7.064
+Iteration number:  178 , Loss:  tensor(7.5058)
+[1,   179] loss: 7.506
+Iteration number:  179 , Loss:  tensor(7.3862)
+[1,   180] loss: 7.386
+Iteration number:  180 , Loss:  tensor(7.2530)
+[1,   181] loss: 7.253
+Iteration number:  181 , Loss:  tensor(6.7971)
+[1,   182] loss: 6.797
+Iteration number:  182 , Loss:  tensor(7.0543)
+[1,   183] loss: 7.054
+Iteration number:  183 , Loss:  tensor(7.2902)
+[1,   184] loss: 7.290
+Iteration number:  184 , Loss:  tensor(7.2817)
+[1,   185] loss: 7.282
+Iteration number:  185 , Loss:  tensor(7.3178)
+[1,   186] loss: 7.318
+Iteration number:  186 , Loss:  tensor(6.7916)
+[1,   187] loss: 6.792
+Iteration number:  187 , Loss:  tensor(6.9968)
+[1,   188] loss: 6.997
+Iteration number:  188 , Loss:  tensor(7.3309)
+[1,   189] loss: 7.331
+Iteration number:  189 , Loss:  tensor(6.8584)
+[1,   190] loss: 6.858
+Iteration number:  190 , Loss:  tensor(6.8100)
+[1,   191] loss: 6.810
+Iteration number:  191 , Loss:  tensor(7.0009)
+[1,   192] loss: 7.001
+Iteration number:  192 , Loss:  tensor(7.1893)
+[1,   193] loss: 7.189
+Iteration number:  193 , Loss:  tensor(6.8717)
+[1,   194] loss: 6.872
+Iteration number:  194 , Loss:  tensor(7.2552)
+[1,   195] loss: 7.255
+Iteration number:  195 , Loss:  tensor(6.8720)
+[1,   196] loss: 6.872
+Iteration number:  196 , Loss:  tensor(6.9210)
+[1,   197] loss: 6.921
+Iteration number:  197 , Loss:  tensor(7.1481)
+[1,   198] loss: 7.148
+Iteration number:  198 , Loss:  tensor(7.0384)
+[1,   199] loss: 7.038
+Iteration number:  199 , Loss:  tensor(6.8525)
+[1,   200] loss: 6.852
+Iteration number:  200 , Loss:  tensor(7.0285)
+[1,   201] loss: 7.029
+Iteration number:  201 , Loss:  tensor(7.2021)
+[1,   202] loss: 7.202
+Iteration number:  202 , Loss:  tensor(6.8008)
+[1,   203] loss: 6.801
+Iteration number:  203 , Loss:  tensor(6.7428)
+[1,   204] loss: 6.743
+Iteration number:  204 , Loss:  tensor(6.9408)
+[1,   205] loss: 6.941
+Iteration number:  205 , Loss:  tensor(6.9512)
+[1,   206] loss: 6.951
+Iteration number:  206 , Loss:  tensor(6.9780)
+[1,   207] loss: 6.978
+Iteration number:  207 , Loss:  tensor(7.0283)
+[1,   208] loss: 7.028
+Iteration number:  208 , Loss:  tensor(7.4166)
+[1,   209] loss: 7.417
+Iteration number:  209 , Loss:  tensor(6.9346)
+[1,   210] loss: 6.935
+Iteration number:  210 , Loss:  tensor(6.6745)
+[1,   211] loss: 6.675
+Iteration number:  211 , Loss:  tensor(7.3524)
+[1,   212] loss: 7.352
+Iteration number:  212 , Loss:  tensor(7.0790)
+[1,   213] loss: 7.079
+Iteration number:  213 , Loss:  tensor(6.6585)
+[1,   214] loss: 6.659
+Iteration number:  214 , Loss:  tensor(6.8874)
+[1,   215] loss: 6.887
+Iteration number:  215 , Loss:  tensor(7.0362)
+[1,   216] loss: 7.036
+Iteration number:  216 , Loss:  tensor(7.1122)
+[1,   217] loss: 7.112
+Iteration number:  217 , Loss:  tensor(6.9202)
+[1,   218] loss: 6.920
+Iteration number:  218 , Loss:  tensor(6.6969)
+[1,   219] loss: 6.697
+Iteration number:  219 , Loss:  tensor(6.8839)
+[1,   220] loss: 6.884
+Iteration number:  220 , Loss:  tensor(7.1122)
+[1,   221] loss: 7.112
+Iteration number:  221 , Loss:  tensor(7.3717)
+[1,   222] loss: 7.372
+Iteration number:  222 , Loss:  tensor(6.8195)
+[1,   223] loss: 6.819
+Iteration number:  223 , Loss:  tensor(6.8052)
+[1,   224] loss: 6.805
+Iteration number:  224 , Loss:  tensor(7.0170)
+[1,   225] loss: 7.017
+Iteration number:  225 , Loss:  tensor(6.8989)
+[1,   226] loss: 6.899
+Iteration number:  226 , Loss:  tensor(6.9522)
+[1,   227] loss: 6.952
+Iteration number:  227 , Loss:  tensor(6.7073)
+[1,   228] loss: 6.707
+Iteration number:  228 , Loss:  tensor(6.8696)
+[1,   229] loss: 6.870
+Iteration number:  229 , Loss:  tensor(6.9123)
+[1,   230] loss: 6.912
+Iteration number:  230 , Loss:  tensor(7.0941)
+[1,   231] loss: 7.094
+Iteration number:  231 , Loss:  tensor(6.4400)
+[1,   232] loss: 6.440
+Iteration number:  232 , Loss:  tensor(6.2607)
+[1,   233] loss: 6.261
+Iteration number:  233 , Loss:  tensor(6.7830)
+[1,   234] loss: 6.783
+Iteration number:  234 , Loss:  tensor(6.7678)
+[1,   235] loss: 6.768
+Iteration number:  235 , Loss:  tensor(7.0672)
+[1,   236] loss: 7.067
+Iteration number:  236 , Loss:  tensor(6.8759)
+[1,   237] loss: 6.876
+Iteration number:  237 , Loss:  tensor(7.0519)
+[1,   238] loss: 7.052
+Iteration number:  238 , Loss:  tensor(6.9109)
+[1,   239] loss: 6.911
+Iteration number:  239 , Loss:  tensor(7.0588)
+[1,   240] loss: 7.059
+Iteration number:  240 , Loss:  tensor(6.7811)
+[1,   241] loss: 6.781
+Iteration number:  241 , Loss:  tensor(6.6876)
+[1,   242] loss: 6.688
+Iteration number:  242 , Loss:  tensor(6.8337)
+[1,   243] loss: 6.834
+Iteration number:  243 , Loss:  tensor(7.0530)
+[1,   244] loss: 7.053
+Iteration number:  244 , Loss:  tensor(6.6637)
+[1,   245] loss: 6.664
+Iteration number:  245 , Loss:  tensor(6.8423)
+[1,   246] loss: 6.842
+Iteration number:  246 , Loss:  tensor(6.8954)
+[1,   247] loss: 6.895
+Iteration number:  247 , Loss:  tensor(6.9263)
+[1,   248] loss: 6.926
+Iteration number:  248 , Loss:  tensor(6.7108)
+[1,   249] loss: 6.711
+Iteration number:  249 , Loss:  tensor(6.8146)
+[1,   250] loss: 6.815
+Iteration number:  250 , Loss:  tensor(6.4843)
+[1,   251] loss: 6.484
+Iteration number:  251 , Loss:  tensor(7.1650)
+[1,   252] loss: 7.165
+Iteration number:  252 , Loss:  tensor(6.6342)
+[1,   253] loss: 6.634
+Iteration number:  253 , Loss:  tensor(6.8226)
+[1,   254] loss: 6.823
+Iteration number:  254 , Loss:  tensor(7.0438)
+[1,   255] loss: 7.044
+Iteration number:  255 , Loss:  tensor(6.7608)
+[1,   256] loss: 6.761
+Iteration number:  256 , Loss:  tensor(6.7166)
+[1,   257] loss: 6.717
+Iteration number:  257 , Loss:  tensor(6.8516)
+[1,   258] loss: 6.852
+Iteration number:  258 , Loss:  tensor(6.7300)
+[1,   259] loss: 6.730
+Iteration number:  259 , Loss:  tensor(6.7360)
+[1,   260] loss: 6.736
+Iteration number:  260 , Loss:  tensor(6.4310)
+[1,   261] loss: 6.431
+Iteration number:  261 , Loss:  tensor(6.9786)
+[1,   262] loss: 6.979
+Iteration number:  262 , Loss:  tensor(6.4751)
+[1,   263] loss: 6.475
+Iteration number:  263 , Loss:  tensor(6.5889)
+[1,   264] loss: 6.589
+Iteration number:  264 , Loss:  tensor(6.7944)
+[1,   265] loss: 6.794
+Iteration number:  265 , Loss:  tensor(6.9349)
+[1,   266] loss: 6.935
+Iteration number:  266 , Loss:  tensor(6.8621)
+[1,   267] loss: 6.862
+Iteration number:  267 , Loss:  tensor(6.9953)
+[1,   268] loss: 6.995
+Iteration number:  268 , Loss:  tensor(6.7097)
+[1,   269] loss: 6.710
+Iteration number:  269 , Loss:  tensor(6.9366)
+[1,   270] loss: 6.937
+Iteration number:  270 , Loss:  tensor(7.0395)
+[1,   271] loss: 7.039
+Iteration number:  271 , Loss:  tensor(6.9444)
+[1,   272] loss: 6.944
+Iteration number:  272 , Loss:  tensor(6.9172)
+[1,   273] loss: 6.917
+Iteration number:  273 , Loss:  tensor(6.9899)
+[1,   274] loss: 6.990
+Iteration number:  274 , Loss:  tensor(6.3433)
+[1,   275] loss: 6.343
+Iteration number:  275 , Loss:  tensor(6.7024)
+[1,   276] loss: 6.702
+Iteration number:  276 , Loss:  tensor(6.9272)
+[1,   277] loss: 6.927
+Iteration number:  277 , Loss:  tensor(6.6598)
+[1,   278] loss: 6.660
+Iteration number:  278 , Loss:  tensor(6.6567)
+[1,   279] loss: 6.657
+Iteration number:  279 , Loss:  tensor(6.7763)
+[1,   280] loss: 6.776
+Iteration number:  280 , Loss:  tensor(7.1599)
+[1,   281] loss: 7.160
+Iteration number:  281 , Loss:  tensor(6.4360)
+[1,   282] loss: 6.436
+Iteration number:  282 , Loss:  tensor(6.7908)
+[1,   283] loss: 6.791
+Iteration number:  283 , Loss:  tensor(6.8503)
+[1,   284] loss: 6.850
+Iteration number:  284 , Loss:  tensor(6.5170)
+[1,   285] loss: 6.517
+Iteration number:  285 , Loss:  tensor(6.5758)
+[1,   286] loss: 6.576
+Iteration number:  286 , Loss:  tensor(6.7414)
+[1,   287] loss: 6.741
+Iteration number:  287 , Loss:  tensor(6.7179)
+[1,   288] loss: 6.718
+Iteration number:  288 , Loss:  tensor(6.7386)
+[1,   289] loss: 6.739
+Iteration number:  289 , Loss:  tensor(6.6153)
+[1,   290] loss: 6.615
+Iteration number:  290 , Loss:  tensor(6.8017)
+[1,   291] loss: 6.802
+Iteration number:  291 , Loss:  tensor(6.5040)
+[1,   292] loss: 6.504
+Iteration number:  292 , Loss:  tensor(6.5529)
+[1,   293] loss: 6.553
+Iteration number:  293 , Loss:  tensor(6.5073)
+[1,   294] loss: 6.507
+Iteration number:  294 , Loss:  tensor(6.5529)
+[1,   295] loss: 6.553
+Iteration number:  295 , Loss:  tensor(6.7584)
+[1,   296] loss: 6.758
+Iteration number:  296 , Loss:  tensor(6.7710)
+[1,   297] loss: 6.771
+Iteration number:  297 , Loss:  tensor(6.4496)
+[1,   298] loss: 6.450
+Iteration number:  298 , Loss:  tensor(6.4111)
+[1,   299] loss: 6.411
+Iteration number:  299 , Loss:  tensor(6.7312)
+[1,   300] loss: 6.731
+Iteration number:  300 , Loss:  tensor(6.4018)
+[1,   301] loss: 6.402
+Iteration number:  301 , Loss:  tensor(6.2935)
+[1,   302] loss: 6.293
+Iteration number:  302 , Loss:  tensor(6.9029)
+[1,   303] loss: 6.903
+Iteration number:  303 , Loss:  tensor(6.5524)
+[1,   304] loss: 6.552
+Iteration number:  304 , Loss:  tensor(6.3345)
+[1,   305] loss: 6.335
+Iteration number:  305 , Loss:  tensor(6.8207)
+[1,   306] loss: 6.821
+Iteration number:  306 , Loss:  tensor(6.4964)
+[1,   307] loss: 6.496
+Iteration number:  307 , Loss:  tensor(6.4693)
+[1,   308] loss: 6.469
+Iteration number:  308 , Loss:  tensor(6.7428)
+[1,   309] loss: 6.743
+Iteration number:  309 , Loss:  tensor(6.6935)
+[1,   310] loss: 6.694
+Iteration number:  310 , Loss:  tensor(6.4713)
+[1,   311] loss: 6.471
+Iteration number:  311 , Loss:  tensor(6.6194)
+[1,   312] loss: 6.619
+Iteration number:  312 , Loss:  tensor(6.7667)
+[1,   313] loss: 6.767
+Iteration number:  313 , Loss:  tensor(6.7562)
+[1,   314] loss: 6.756
+Iteration number:  314 , Loss:  tensor(6.5320)
+[1,   315] loss: 6.532
+Iteration number:  315 , Loss:  tensor(6.3355)
+[1,   316] loss: 6.336
+Iteration number:  316 , Loss:  tensor(6.5798)
+[1,   317] loss: 6.580
+Iteration number:  317 , Loss:  tensor(6.7523)
+[1,   318] loss: 6.752
+Iteration number:  318 , Loss:  tensor(6.4790)
+[1,   319] loss: 6.479
+Iteration number:  319 , Loss:  tensor(6.5533)
+[1,   320] loss: 6.553
+Iteration number:  320 , Loss:  tensor(6.7041)
+[1,   321] loss: 6.704
+Iteration number:  321 , Loss:  tensor(6.7866)
+[1,   322] loss: 6.787
+Iteration number:  322 , Loss:  tensor(6.3864)
+[1,   323] loss: 6.386
+Iteration number:  323 , Loss:  tensor(6.6416)
+[1,   324] loss: 6.642
+Iteration number:  324 , Loss:  tensor(6.4501)
+[1,   325] loss: 6.450
+Iteration number:  325 , Loss:  tensor(6.6280)
+[1,   326] loss: 6.628
+Iteration number:  326 , Loss:  tensor(6.6669)
+[1,   327] loss: 6.667
+Iteration number:  327 , Loss:  tensor(6.5106)
+[1,   328] loss: 6.511
+Iteration number:  328 , Loss:  tensor(6.6822)
+[1,   329] loss: 6.682
+Iteration number:  329 , Loss:  tensor(6.5937)
+[1,   330] loss: 6.594
+Iteration number:  330 , Loss:  tensor(6.4121)
+[1,   331] loss: 6.412
+Iteration number:  331 , Loss:  tensor(6.5739)
+[1,   332] loss: 6.574
+Iteration number:  332 , Loss:  tensor(6.4652)
+[1,   333] loss: 6.465
+Iteration number:  333 , Loss:  tensor(6.7138)
+[1,   334] loss: 6.714
+Iteration number:  334 , Loss:  tensor(6.2217)
+[1,   335] loss: 6.222
+Iteration number:  335 , Loss:  tensor(6.4336)
+[1,   336] loss: 6.434
+Iteration number:  336 , Loss:  tensor(6.5306)
+[1,   337] loss: 6.531
+Iteration number:  337 , Loss:  tensor(6.9144)
+[1,   338] loss: 6.914
+Iteration number:  338 , Loss:  tensor(6.7485)
+[1,   339] loss: 6.749
+Iteration number:  339 , Loss:  tensor(6.3254)
+[1,   340] loss: 6.325
+Iteration number:  340 , Loss:  tensor(6.7161)
+[1,   341] loss: 6.716
+Iteration number:  341 , Loss:  tensor(6.7609)
+[1,   342] loss: 6.761
+Iteration number:  342 , Loss:  tensor(6.4893)
+[1,   343] loss: 6.489
+Iteration number:  343 , Loss:  tensor(7.0968)
+[1,   344] loss: 7.097
+Iteration number:  344 , Loss:  tensor(6.4520)
+[1,   345] loss: 6.452
+Iteration number:  345 , Loss:  tensor(6.6973)
+[1,   346] loss: 6.697
+Iteration number:  346 , Loss:  tensor(6.3680)
+[1,   347] loss: 6.368
+Iteration number:  347 , Loss:  tensor(6.4348)
+[1,   348] loss: 6.435
+Iteration number:  348 , Loss:  tensor(6.6384)
+[1,   349] loss: 6.638
+Iteration number:  349 , Loss:  tensor(6.6867)
+[1,   350] loss: 6.687
+Iteration number:  350 , Loss:  tensor(6.9189)
+[1,   351] loss: 6.919
+Iteration number:  351 , Loss:  tensor(6.5609)
+[1,   352] loss: 6.561
+Iteration number:  352 , Loss:  tensor(6.3340)
+[1,   353] loss: 6.334
+Iteration number:  353 , Loss:  tensor(6.6180)
+[1,   354] loss: 6.618
+Iteration number:  354 , Loss:  tensor(6.4938)
+[1,   355] loss: 6.494
+Iteration number:  355 , Loss:  tensor(6.6667)
+[1,   356] loss: 6.667
+Iteration number:  356 , Loss:  tensor(6.5617)
+[1,   357] loss: 6.562
+Iteration number:  357 , Loss:  tensor(6.6109)
+[1,   358] loss: 6.611
+Iteration number:  358 , Loss:  tensor(6.5081)
+[1,   359] loss: 6.508
+Iteration number:  359 , Loss:  tensor(6.7213)
+[1,   360] loss: 6.721
+Iteration number:  360 , Loss:  tensor(6.8584)
+[1,   361] loss: 6.858
+Iteration number:  361 , Loss:  tensor(6.2598)
+[1,   362] loss: 6.260
+Iteration number:  362 , Loss:  tensor(6.4649)
+[1,   363] loss: 6.465
+Iteration number:  363 , Loss:  tensor(6.4465)
+[1,   364] loss: 6.447
+Iteration number:  364 , Loss:  tensor(6.6396)
+[1,   365] loss: 6.640
+Iteration number:  365 , Loss:  tensor(6.4061)
+[1,   366] loss: 6.406
+Iteration number:  366 , Loss:  tensor(6.5803)
+[1,   367] loss: 6.580
+Iteration number:  367 , Loss:  tensor(6.4596)
+[1,   368] loss: 6.460
+Iteration number:  368 , Loss:  tensor(6.0875)
+[1,   369] loss: 6.087
+Iteration number:  369 , Loss:  tensor(6.5871)
+[1,   370] loss: 6.587
+Iteration number:  370 , Loss:  tensor(6.4020)
+[1,   371] loss: 6.402
+Iteration number:  371 , Loss:  tensor(6.6443)
+[1,   372] loss: 6.644
+Iteration number:  372 , Loss:  tensor(6.6537)
+[1,   373] loss: 6.654
+Iteration number:  373 , Loss:  tensor(6.4652)
+[1,   374] loss: 6.465
+Iteration number:  374 , Loss:  tensor(6.5867)
+[1,   375] loss: 6.587
+Iteration number:  375 , Loss:  tensor(6.4693)
+[1,   376] loss: 6.469
+Iteration number:  376 , Loss:  tensor(6.3887)
+[1,   377] loss: 6.389
+Iteration number:  377 , Loss:  tensor(6.5553)
+[1,   378] loss: 6.555
+Iteration number:  378 , Loss:  tensor(6.4237)
+[1,   379] loss: 6.424
+Iteration number:  379 , Loss:  tensor(6.6973)
+[1,   380] loss: 6.697
+Iteration number:  380 , Loss:  tensor(6.3948)
+[1,   381] loss: 6.395
+Iteration number:  381 , Loss:  tensor(6.6881)
+[1,   382] loss: 6.688
+Iteration number:  382 , Loss:  tensor(6.2714)
+[1,   383] loss: 6.271
+Iteration number:  383 , Loss:  tensor(6.4098)
+[1,   384] loss: 6.410
+Iteration number:  384 , Loss:  tensor(6.7726)
+[1,   385] loss: 6.773
+Iteration number:  385 , Loss:  tensor(6.4420)
+[1,   386] loss: 6.442
+Iteration number:  386 , Loss:  tensor(6.6999)
+[1,   387] loss: 6.700
+Iteration number:  387 , Loss:  tensor(6.2077)
+[1,   388] loss: 6.208
+Iteration number:  388 , Loss:  tensor(6.6397)
+[1,   389] loss: 6.640
+Iteration number:  389 , Loss:  tensor(6.4321)
+[1,   390] loss: 6.432
+Iteration number:  390 , Loss:  tensor(6.5944)
+[1,   391] loss: 6.594
+Iteration number:  391 , Loss:  tensor(6.8814)
+[1,   392] loss: 6.881
+Iteration number:  392 , Loss:  tensor(6.4821)
+[1,   393] loss: 6.482
+Iteration number:  393 , Loss:  tensor(6.3471)
+[1,   394] loss: 6.347
+Iteration number:  394 , Loss:  tensor(6.2358)
+[1,   395] loss: 6.236
+Iteration number:  395 , Loss:  tensor(6.5448)
+[1,   396] loss: 6.545
+Iteration number:  396 , Loss:  tensor(6.4932)
+[1,   397] loss: 6.493
+Iteration number:  397 , Loss:  tensor(6.3130)
+[1,   398] loss: 6.313
+Iteration number:  398 , Loss:  tensor(6.4159)
+[1,   399] loss: 6.416
+Iteration number:  399 , Loss:  tensor(6.9304)
+[1,   400] loss: 6.930
+Iteration number:  400 , Loss:  tensor(6.3785)
+[1,   401] loss: 6.379
+Iteration number:  401 , Loss:  tensor(6.6318)
+[1,   402] loss: 6.632
+Iteration number:  402 , Loss:  tensor(6.5466)
+[1,   403] loss: 6.547
+Iteration number:  403 , Loss:  tensor(6.5306)
+[1,   404] loss: 6.531
+Iteration number:  404 , Loss:  tensor(6.6710)
+[1,   405] loss: 6.671
+Iteration number:  405 , Loss:  tensor(6.2729)
+[1,   406] loss: 6.273
+Iteration number:  406 , Loss:  tensor(6.4373)
+[1,   407] loss: 6.437
+Iteration number:  407 , Loss:  tensor(6.2471)
+[1,   408] loss: 6.247
+Iteration number:  408 , Loss:  tensor(6.3014)
+[1,   409] loss: 6.301
+Iteration number:  409 , Loss:  tensor(6.5835)
+[1,   410] loss: 6.583
+Iteration number:  410 , Loss:  tensor(6.6242)
+[1,   411] loss: 6.624
+Iteration number:  411 , Loss:  tensor(6.4072)
+[1,   412] loss: 6.407
+Iteration number:  412 , Loss:  tensor(6.5678)
+[1,   413] loss: 6.568
+Iteration number:  413 , Loss:  tensor(6.5670)
+[1,   414] loss: 6.567
+Iteration number:  414 , Loss:  tensor(6.2615)
+[1,   415] loss: 6.261
+Iteration number:  415 , Loss:  tensor(6.3620)
+[1,   416] loss: 6.362
+Iteration number:  416 , Loss:  tensor(6.7026)
+[1,   417] loss: 6.703
+Iteration number:  417 , Loss:  tensor(6.1824)
+[1,   418] loss: 6.182
+Iteration number:  418 , Loss:  tensor(6.5274)
+[1,   419] loss: 6.527
+Iteration number:  419 , Loss:  tensor(6.5244)
+[1,   420] loss: 6.524
+Iteration number:  420 , Loss:  tensor(6.3788)
+[1,   421] loss: 6.379
+Iteration number:  421 , Loss:  tensor(6.5978)
+[1,   422] loss: 6.598
+Iteration number:  422 , Loss:  tensor(6.8265)
+[1,   423] loss: 6.826
+Iteration number:  423 , Loss:  tensor(6.0789)
+[1,   424] loss: 6.079
+Iteration number:  424 , Loss:  tensor(6.3838)
+[1,   425] loss: 6.384
+Iteration number:  425 , Loss:  tensor(6.4584)
+[1,   426] loss: 6.458
+Iteration number:  426 , Loss:  tensor(6.3548)
+[1,   427] loss: 6.355
+Iteration number:  427 , Loss:  tensor(6.7471)
+[1,   428] loss: 6.747
+Iteration number:  428 , Loss:  tensor(6.5183)
+[1,   429] loss: 6.518
+Iteration number:  429 , Loss:  tensor(6.4622)
+[1,   430] loss: 6.462
+Iteration number:  430 , Loss:  tensor(6.6949)
+[1,   431] loss: 6.695
+Iteration number:  431 , Loss:  tensor(6.2106)
+[1,   432] loss: 6.211
+Iteration number:  432 , Loss:  tensor(6.6507)
+[1,   433] loss: 6.651
+Iteration number:  433 , Loss:  tensor(6.5031)
+[1,   434] loss: 6.503
+Iteration number:  434 , Loss:  tensor(6.1033)
+[1,   435] loss: 6.103
+Iteration number:  435 , Loss:  tensor(6.4000)
+[1,   436] loss: 6.400
+Iteration number:  436 , Loss:  tensor(6.4139)
+[1,   437] loss: 6.414
+Iteration number:  437 , Loss:  tensor(6.1804)
+[1,   438] loss: 6.180
+Iteration number:  438 , Loss:  tensor(6.5547)
+[1,   439] loss: 6.555
+Iteration number:  439 , Loss:  tensor(6.4454)
+[1,   440] loss: 6.445
+Iteration number:  440 , Loss:  tensor(6.2767)
+[1,   441] loss: 6.277
+Iteration number:  441 , Loss:  tensor(6.5482)
+[1,   442] loss: 6.548

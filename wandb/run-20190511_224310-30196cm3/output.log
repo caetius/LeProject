@@ -1,0 +1,173 @@
+Split Brain Parameters- AB Net:  389632
+Split Brain Parameters- ch1 Net:  389440
+Classifier Params:  28801000
+Total Finetuning Params:  29580072
+============== Pretrained encoder ==============
+SplitBrain(
+  (ch2_net): SimpleAE(
+    (encoder): Sequential(
+      (0): Conv2d(2, 12, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+      (1): BatchNorm2d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU()
+      (3): Conv2d(12, 24, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+      (4): BatchNorm2d(24, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (5): ReLU()
+      (6): Conv2d(24, 48, kernel_size=(5, 5), stride=(1, 1))
+      (7): BatchNorm2d(48, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (8): ReLU()
+      (9): Conv2d(48, 96, kernel_size=(5, 5), stride=(1, 1))
+      (10): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (11): ReLU()
+      (12): Conv2d(96, 100, kernel_size=(5, 5), stride=(1, 1))
+    )
+  )
+  (ch1_net): SimpleAE(
+    (encoder): Sequential(
+      (0): Conv2d(1, 12, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+      (1): BatchNorm2d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU()
+      (3): Conv2d(12, 24, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+      (4): BatchNorm2d(24, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (5): ReLU()
+      (6): Conv2d(24, 48, kernel_size=(5, 5), stride=(1, 1))
+      (7): BatchNorm2d(48, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (8): ReLU()
+      (9): Conv2d(48, 96, kernel_size=(5, 5), stride=(1, 1))
+      (10): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (11): ReLU()
+      (12): Conv2d(96, 100, kernel_size=(5, 5), stride=(1, 1))
+    )
+  )
+)
+============== shallow ==============
+ShallowClassifier(
+  (classifier): Linear(in_features=28800, out_features=1000, bias=True)
+)
+Loading checkpoint  /Users/Caetius/Desktop/LeProject/Split_Brain_AE/weights_64/sb_simple_rgb_0.5.pth
+Iteration number:  0 , Loss:  tensor(10.0313)
+Iteration number:  1 , Loss:  tensor(143.6620)
+Iteration number:  2 , Loss:  tensor(180.3885)
+Iteration number:  3 , Loss:  tensor(163.2729)
+Iteration number:  4 , Loss:  tensor(133.3017)
+[1,     5] loss: 126.131
+Iteration number:  5 , Loss:  tensor(103.8914)
+Iteration number:  6 , Loss:  tensor(79.1975)
+Iteration number:  7 , Loss:  tensor(60.3310)
+Iteration number:  8 , Loss:  tensor(33.6554)
+Iteration number:  9 , Loss:  tensor(30.9026)
+[1,    10] loss: 61.596
+Iteration number:  10 , Loss:  tensor(35.2512)
+Iteration number:  11 , Loss:  tensor(36.9267)
+Iteration number:  12 , Loss:  tensor(32.4703)
+Iteration number:  13 , Loss:  tensor(45.1557)
+Iteration number:  14 , Loss:  tensor(29.6285)
+[1,    15] loss: 35.886
+Iteration number:  15 , Loss:  tensor(39.0815)
+Iteration number:  16 , Loss:  tensor(44.9353)
+Iteration number:  17 , Loss:  tensor(55.6043)
+Iteration number:  18 , Loss:  tensor(42.3118)
+Iteration number:  19 , Loss:  tensor(48.9419)
+[1,    20] loss: 46.175
+Iteration number:  20 , Loss:  tensor(48.1474)
+Iteration number:  21 , Loss:  tensor(44.4557)
+Iteration number:  22 , Loss:  tensor(36.4350)
+Iteration number:  23 , Loss:  tensor(39.5924)
+Iteration number:  24 , Loss:  tensor(26.2745)
+[1,    25] loss: 38.981
+Iteration number:  25 , Loss:  tensor(22.4592)
+Iteration number:  26 , Loss:  tensor(23.5701)
+Iteration number:  27 , Loss:  tensor(21.4958)
+Iteration number:  28 , Loss:  tensor(16.0128)
+Iteration number:  29 , Loss:  tensor(15.4266)
+[1,    30] loss: 19.793
+Iteration number:  30 , Loss:  tensor(19.6869)
+Iteration number:  31 , Loss:  tensor(18.4374)
+Iteration number:  32 , Loss:  tensor(14.5772)
+Iteration number:  33 , Loss:  tensor(14.5937)
+Iteration number:  34 , Loss:  tensor(13.9332)
+[1,    35] loss: 16.246
+Iteration number:  35 , Loss:  tensor(17.0932)
+Iteration number:  36 , Loss:  tensor(13.5169)
+Iteration number:  37 , Loss:  tensor(14.0097)
+Iteration number:  38 , Loss:  tensor(12.1365)
+Iteration number:  39 , Loss:  tensor(12.4592)
+[1,    40] loss: 13.843
+Iteration number:  40 , Loss:  tensor(11.4505)
+Iteration number:  41 , Loss:  tensor(11.4422)
+Iteration number:  42 , Loss:  tensor(10.1824)
+Iteration number:  43 , Loss:  tensor(13.1062)
+Iteration number:  44 , Loss:  tensor(10.5242)
+[1,    45] loss: 11.341
+Iteration number:  45 , Loss:  tensor(12.2236)
+Iteration number:  46 , Loss:  tensor(10.9831)
+Iteration number:  47 , Loss:  tensor(9.0346)
+Iteration number:  48 , Loss:  tensor(8.6982)
+Iteration number:  49 , Loss:  tensor(8.9049)
+[1,    50] loss: 9.969
+Iteration number:  50 , Loss:  tensor(9.3408)
+Iteration number:  51 , Loss:  tensor(9.2164)
+Iteration number:  52 , Loss:  tensor(10.1371)
+Iteration number:  53 , Loss:  tensor(10.1084)
+Iteration number:  54 , Loss:  tensor(9.9800)
+[1,    55] loss: 9.757
+Iteration number:  55 , Loss:  tensor(8.6413)
+Iteration number:  56 , Loss:  tensor(8.5764)
+Iteration number:  57 , Loss:  tensor(8.5777)
+Iteration number:  58 , Loss:  tensor(9.0096)
+Iteration number:  59 , Loss:  tensor(8.3498)
+[1,    60] loss: 8.631
+Iteration number:  60 , Loss:  tensor(8.6362)
+Iteration number:  61 , Loss:  tensor(8.7588)
+Iteration number:  62 , Loss:  tensor(8.1230)
+Iteration number:  63 , Loss:  tensor(9.9898)
+Iteration number:  64 , Loss:  tensor(8.0064)
+[1,    65] loss: 8.703
+Iteration number:  65 , Loss:  tensor(8.6727)
+Iteration number:  66 , Loss:  tensor(8.5717)
+Iteration number:  67 , Loss:  tensor(7.6768)
+Iteration number:  68 , Loss:  tensor(8.1708)
+Iteration number:  69 , Loss:  tensor(7.9411)
+[1,    70] loss: 8.207
+Iteration number:  70 , Loss:  tensor(7.8946)
+Iteration number:  71 , Loss:  tensor(7.7221)
+Iteration number:  72 , Loss:  tensor(8.1370)
+Iteration number:  73 , Loss:  tensor(8.2318)
+Iteration number:  74 , Loss:  tensor(8.0385)
+[1,    75] loss: 8.005
+Iteration number:  75 , Loss:  tensor(7.9255)
+Iteration number:  76 , Loss:  tensor(8.1302)
+Iteration number:  77 , Loss:  tensor(8.0219)
+Iteration number:  78 , Loss:  tensor(7.2742)
+Iteration number:  79 , Loss:  tensor(7.8822)
+[1,    80] loss: 7.847
+Iteration number:  80 , Loss:  tensor(7.9671)
+Iteration number:  81 , Loss:  tensor(8.1207)
+Iteration number:  82 , Loss:  tensor(7.8396)
+Iteration number:  83 , Loss:  tensor(8.3975)
+Iteration number:  84 , Loss:  tensor(7.2188)
+[1,    85] loss: 7.909
+Iteration number:  85 , Loss:  tensor(8.7427)
+Iteration number:  86 , Loss:  tensor(7.7606)
+Iteration number:  87 , Loss:  tensor(7.3706)
+Iteration number:  88 , Loss:  tensor(8.6789)
+Iteration number:  89 , Loss:  tensor(7.7451)
+[1,    90] loss: 8.060
+Iteration number:  90 , Loss:  tensor(7.9128)
+Iteration number:  91 , Loss:  tensor(8.4940)
+Iteration number:  92 , Loss:  tensor(7.9649)
+Iteration number:  93 , Loss:  tensor(8.1972)
+Iteration number:  94 , Loss:  tensor(7.7921)
+[1,    95] loss: 8.072
+Iteration number:  95 , Loss:  tensor(7.5955)
+Iteration number:  96 , Loss:  tensor(7.8940)
+Iteration number:  97 , Loss:  tensor(7.9190)
+Iteration number:  98 , Loss:  tensor(7.3515)
+Iteration number:  99 , Loss:  tensor(7.6226)
+[1,   100] loss: 7.677
+Iteration number:  100 , Loss:  tensor(7.5306)
+Iteration number:  101 , Loss:  tensor(7.8048)
+Iteration number:  102 , Loss:  tensor(7.5143)
+Iteration number:  103 , Loss:  tensor(7.5109)
+Iteration number:  104 , Loss:  tensor(7.4081)
+[1,   105] loss: 7.554
+Iteration number:  105 , Loss:  tensor(7.8995)

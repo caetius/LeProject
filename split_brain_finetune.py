@@ -6,6 +6,7 @@ import argparse
 import torch.nn as nn
 import torch.optim as optim
 
+
 import wandb
 
 def main():
@@ -18,14 +19,14 @@ def main():
                         help="Perform validation only.", metavar='v')
     parser.add_argument("--wandb", '-name_of_wandb_proj', type=str, default="le-project",
                         help="Name of WAND Project.", metavar='w1')
-    parser.add_argument("--weights_folder", '-folder_name', type=str, default='weights',
+    parser.add_argument("--weights_folder", '-folder_name', type=str, default='weights_64_finetuning',
                         help="Name of weights folder for all weights.", metavar='w')
     parser.add_argument("--epochs", '-num_epochs', type=int, default=20,
                         help="Number of epochs.", metavar='ep')
-    parser.add_argument("--num_ab_classes", '-num_ab', type=int, default=10,
-                        help="num ab classes", metavar='abc')
-    parser.add_argument("--num_L_classes", '-num_L', type=int, default=100,
-                        help="num ab classes", metavar='abl')
+    parser.add_argument("--num_classes_ch1", '-num_1', type=int, default=100,
+                        help="num classes for single channel: L or r", metavar='ch1')
+    parser.add_argument("--num_classes_ch2", '-num_2', type=int, default=10,
+                        help="num classes for paired channels: ab or gb", metavar='ch2')
     parser.add_argument("--downsample_size", '-num_pixels', type=int, default=12,
                         help="size of image on which to perform classification", metavar='dsc')
 
@@ -38,13 +39,15 @@ def main():
                         help="Batch size.", metavar='bs')
 
     # Things that change the most
-    parser.add_argument("--model_type", '-model', type=str, default='alex',
+    parser.add_argument("--model_type", '-model', type=str, default='simple',
                         help="Type of Autoencoder used.", metavar='ae')
     parser.add_argument("--lr_decay", '-learning_rate_decay', type=float, default=0.5,
                         help="percentage by which the learning rate will decrease after every epoch", metavar='lrd')
     # Possible: rgb, lab, lab_distort
-    parser.add_argument("--image_space", '-type_of_img_rep', type=str, default="lab_distort",
+    parser.add_argument("--image_space", '-type_of_img_rep', type=str, default="rgb",
                         help="The image space of the input and output of the network.", metavar='ims')
+    parser.add_argument("--num_samples_per_class", '-num_examples_to_train_on', type=int, default=64,
+                        help="The number of images per class to finetune on.", metavar='samples')
 
     args = parser.parse_args()
 
@@ -73,14 +76,15 @@ def main():
         wandb.config.update(args)
 
     # Create model
-    classifier = create_sb_model(type="classifier_"+args.model_type+"_shallow", ckpt=pretrained_weight_name, num_ab=args.num_ab_classes, num_L=args.num_L_classes)
+    classifier = create_sb_model(type="classifier_"+args.model_type+"_shallow", ckpt=pretrained_weight_name, num_ch2=args.num_classes_ch2, num_ch1=args.num_classes_ch1, downsample_size=args.downsample_size)
 
     ''' Load data '''
-    loader_sup, loader_val_sup, loader_unsup = nyu_lab_loader("../ssl_data_96", args.batch_size, downsample_params=[args.downsample_size, args.num_ab_classes, args.num_L_classes])
+    loader_sup, loader_val_sup, loader_unsup = nyu_lab_loader("../ssl_data_96", args.batch_size, downsample_params=[args.downsample_size, args.num_classes_ch2, args.num_classes_ch1], image_space=args.image_space, num_samples=args.num_samples_per_class)
 
     # Define an optimizer and criterion
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(classifier.parameters())
+    optimizer = optim.Adam(classifier.parameters(), lr=1e-4)
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=args.lr_decay)
 
     if args.wandb_on:
         wandb.watch(classifier)
@@ -97,14 +101,14 @@ def main():
 
         for i, (inputs, labels, _) in enumerate(loader_sup, 0):
             inputs = get_torch_vars(inputs.type(torch.FloatTensor))
-            L = inputs[:, 0, :, :]  # one channel
-            ab = inputs[:, 1:3, :, :]  # two channels
+            ch1 = inputs[:, 0, :, :]  # one channel
+            ch2 = inputs[:, 1:3, :, :]  # two channels
             labels = get_torch_vars(labels)
 
             optimizer.zero_grad()
 
             # ============ Forward ============
-            out = classifier((ab, L))
+            out = classifier((ch2, ch1))
 
             # =========== Compute Loss =========
 
@@ -115,18 +119,18 @@ def main():
             optimizer.step()
 
             if args.verbose:
-                print("Iteration number: ", i)
-                #grid_imshow(inputs, inputs)
+                print("Iteration number: ", i, ", Loss: ", loss.data)
 
             # ============ Logging ============
-            if i % 1000 == 999:
+            logging_interval = 1
+            if i % logging_interval == logging_interval-1:
                 if args.wandb_on:
-                    wandb.log({"Finetuning Loss": running_loss / 1000,
+                    wandb.log({"Finetuning Loss": running_loss / logging_interval,
                            "Epoch" : epoch + 1,
                            "Iteration" : i + 1,
                            })
                 print('[%d, %5d] loss: %.3f' %
-                      (epoch + 1, i + 1, running_loss / 1000))
+                      (epoch + 1, i + 1, running_loss / logging_interval))
                 running_loss = 0.0
 
         ''' Do Validation: After every epoch to check for overfitting '''
@@ -138,14 +142,14 @@ def main():
 
             for j, (img, target, _) in enumerate(loader_val_sup, 0):
                 img = get_torch_vars(img)
-                L_ = img[:, 0, :, :]  # one channel
-                ab_ = img[:, 1:3, :, :]  # two channels
+                ch1_ = img[:, 0, :, :]  # one channel
+                ch2_ = img[:, 1:3, :, :]  # two channels
                 target = get_torch_vars(target)
                 batch_size = img.shape[0]
                 n_samples += batch_size
 
                 # ============ Forward ============
-                output = classifier((ab_, L_))
+                output = classifier((ch2_, ch1_))
 
                 # ============ Accuracy ============
                 # Top 1 accuracy
@@ -177,8 +181,11 @@ def main():
             print('Validation top %d accuracy: %f'% (top_k, top_k_acc))
 
         ''' Save Trained Model '''
-        print('Done Training. Saving Model...')
+        print('Done Training Epoch ', epoch, '. Saving Model...')
         torch.save(classifier.state_dict(), finetuned_weight_name)
+
+        ''' Update Learning Rate '''
+        scheduler.step()
 
     exit(0)
 

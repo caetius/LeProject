@@ -1,0 +1,44 @@
+wandb_version: 1
+
+batch_size:
+  desc: null
+  value: 32
+downsample_size:
+  desc: null
+  value: 12
+epochs:
+  desc: null
+  value: 20
+image_space:
+  desc: null
+  value: rgb
+lr_decay:
+  desc: null
+  value: 0.5
+model_type:
+  desc: null
+  value: simple
+num_classes_ch1:
+  desc: null
+  value: 100
+num_classes_ch2:
+  desc: null
+  value: 10
+num_samples_per_class:
+  desc: null
+  value: 2
+valid:
+  desc: null
+  value: true
+verbose:
+  desc: null
+  value: true
+wandb:
+  desc: null
+  value: le-project
+wandb_on:
+  desc: null
+  value: true
+weights_folder:
+  desc: null
+  value: weights_64

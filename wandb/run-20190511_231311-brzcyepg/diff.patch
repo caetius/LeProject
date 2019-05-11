@@ -1,0 +1,438 @@
+diff --git a/load_data.py b/load_data.py
+index cd2c19e..59d8c12 100644
+--- a/load_data.py
++++ b/load_data.py
+@@ -3,18 +3,21 @@ import torch
+ from custom_loader import LABLoader
+ 
+ 
++
+ ''' Loads NYU image set with LabLoader, which turns RGB to LAB and also returns a downsampled version of the image '''
+-def nyu_lab_loader(path, batch_size, downsample_params, image_space):
++def nyu_lab_loader(path, batch_size, downsample_params, image_space, num_samples=64):
+ 
+     sup_train_data = LABLoader('{}/{}/train'.format(path, 'supervised'), transform=None, downsample_params=downsample_params, image_space=image_space)
+     sup_val_data = LABLoader('{}/{}/val'.format(path, 'supervised'), transform=None, downsample_params=downsample_params, image_space=image_space)
+     unsup_data = LABLoader('{}/{}/'.format(path, 'unsupervised'), transform=None, downsample_params=downsample_params, image_space=image_space)
+ 
++    indices = torch.randperm(num_samples)
++
+     data_loader_sup_train = torch.utils.data.DataLoader(
+         sup_train_data,
+         batch_size=batch_size,
+-        shuffle=True,
+-        num_workers=0
++        num_workers=0,
++        sampler=torch.utils.data.SubsetRandomSampler(indices)
+     )
+     data_loader_sup_val = torch.utils.data.DataLoader(
+         sup_val_data,
+diff --git a/models.py b/models.py
+index e674df7..3b0d5d7 100644
+--- a/models.py
++++ b/models.py
+@@ -3,9 +3,6 @@ import torch
+ 
+ ''' Split-Brain Code '''
+ 
+-N_HID = 1048
+-
+-
+ class SimpleAE(nn.Module):
+ 
+     def __init__(self, in_channels, out_channels):
+@@ -368,16 +365,10 @@ class SplitBrain(nn.Module):
+ 
+ ''' Train a classifier consisting of the AlexNet plus a resizing linear layer'''
+ class SBNetClassifier(nn.Module):
+-    def __init__(self, encoder="alex", classifier="mlp", num_ch2=25, num_ch1=100):
++    def __init__(self, encoder="alex", classifier="mlp", num_ch2=10, num_ch1=100, downsample_size=12):
+         super(SBNetClassifier, self).__init__()
+         self.sp = SplitBrain(encoder=encoder, num_ch2=num_ch2, num_ch1=num_ch1)
+-        n_in = num_ch2**2+num_ch1
+-        if encoder == "alex":
+-            n_in *= 11**2
+-        elif encoder == "googl":
+-            n_in *= 7**2
+-        elif encoder == "simple":
+-            n_in *= 6**2
++        n_in = (num_ch2**2+num_ch1)*downsample_size**2
+         if classifier == "mlp":
+             self.classifier = MLPClassifier(n_in,1000)
+         elif classifier == "shallow":
+@@ -387,9 +378,8 @@ class SBNetClassifier(nn.Module):
+ 
+     def forward(self, x):
+         ch2, ch1 = x
+-        encoded_ch1 = self.sp.ch2_net(ch2.view(ch2.shape[0], self.sp.ch2_net.in_channels, 96, 96))
+-        encoded_ch2 = self.sp.ch1_net(ch1.view(ch1.shape[0], self.sp.ch1_net.in_channels, 96, 96))
+-        full_emb = torch.cat((encoded_ch2, encoded_ch1), 1)
++        ch2_hat, ch1_hat = self.sp((ch2.view(ch2.shape[0], self.sp.ch2_net.in_channels, 96, 96), ch1.view(ch1.shape[0], self.sp.ch1_net.in_channels, 96, 96)))
++        full_emb = torch.cat((ch2_hat, ch1_hat), 1)
+         linear = self.classifier(full_emb.view(full_emb.shape[0], -1))
+         return linear
+ 
+@@ -404,6 +394,7 @@ class MLPClassifier(nn.Module):
+ 
+         super(MLPClassifier, self).__init__()
+ 
++        N_HID = 1000
+         self.out_channels = n_out
+         self.classifier = nn.Sequential(
+             nn.Linear(n_in, N_HID),
+diff --git a/split_brain_finetune.py b/split_brain_finetune.py
+index 9e03a8d..7ddaed4 100644
+--- a/split_brain_finetune.py
++++ b/split_brain_finetune.py
+@@ -6,6 +6,7 @@ import argparse
+ import torch.nn as nn
+ import torch.optim as optim
+ 
++
+ import wandb
+ 
+ def main():
+@@ -18,33 +19,35 @@ def main():
+                         help="Perform validation only.", metavar='v')
+     parser.add_argument("--wandb", '-name_of_wandb_proj', type=str, default="le-project",
+                         help="Name of WAND Project.", metavar='w1')
+-    parser.add_argument("--weights_folder", '-folder_name', type=str, default='weights',
++    parser.add_argument("--weights_folder", '-folder_name', type=str, default='weights_64',
+                         help="Name of weights folder for all weights.", metavar='w')
+     parser.add_argument("--epochs", '-num_epochs', type=int, default=20,
+                         help="Number of epochs.", metavar='ep')
+-    parser.add_argument("--num_ab_classes", '-num_ab', type=int, default=10,
+-                        help="num ab classes", metavar='abc')
+-    parser.add_argument("--num_L_classes", '-num_L', type=int, default=100,
+-                        help="num ab classes", metavar='abl')
++    parser.add_argument("--num_classes_ch1", '-num_1', type=int, default=100,
++                        help="num classes for single channel: L or r", metavar='ch1')
++    parser.add_argument("--num_classes_ch2", '-num_2', type=int, default=10,
++                        help="num classes for paired channels: ab or gb", metavar='ch2')
+     parser.add_argument("--downsample_size", '-num_pixels', type=int, default=12,
+                         help="size of image on which to perform classification", metavar='dsc')
+ 
+     # Things that change when you put model on GPU or remote cluster
+     parser.add_argument("--verbose", '-verbose_mode', type=bool, default=True,
+                         help="Show images as you feed them in, show reconstructions as they come out.", metavar='b')
+-    parser.add_argument("--wandb_on", '-is_wand_on', type=bool, default=False,
++    parser.add_argument("--wandb_on", '-is_wand_on', type=bool, default=True,
+                         help="Name of WAND Project.", metavar='w2')
+     parser.add_argument("--batch_size", '-num_examples_per_batch', type=int, default=32,
+                         help="Batch size.", metavar='bs')
+ 
+     # Things that change the most
+-    parser.add_argument("--model_type", '-model', type=str, default='alex',
++    parser.add_argument("--model_type", '-model', type=str, default='simple',
+                         help="Type of Autoencoder used.", metavar='ae')
+     parser.add_argument("--lr_decay", '-learning_rate_decay', type=float, default=0.5,
+                         help="percentage by which the learning rate will decrease after every epoch", metavar='lrd')
+     # Possible: rgb, lab, lab_distort
+-    parser.add_argument("--image_space", '-type_of_img_rep', type=str, default="lab_distort",
++    parser.add_argument("--image_space", '-type_of_img_rep', type=str, default="rgb",
+                         help="The image space of the input and output of the network.", metavar='ims')
++    parser.add_argument("--num_samples_per_class", '-num_examples_to_train_on', type=int, default=2,
++                        help="The number of images per class to finetune on.", metavar='samples')
+ 
+     args = parser.parse_args()
+ 
+@@ -73,14 +76,17 @@ def main():
+         wandb.config.update(args)
+ 
+     # Create model
+-    classifier = create_sb_model(type="classifier_"+args.model_type+"_shallow", ckpt=pretrained_weight_name, num_ab=args.num_ab_classes, num_L=args.num_L_classes)
++    classifier = create_sb_model(type="classifier_"+args.model_type+"_shallow", ckpt=pretrained_weight_name, num_ch2=args.num_classes_ch2, num_ch1=args.num_classes_ch1, downsample_size=args.downsample_size)
+ 
+     ''' Load data '''
+-    loader_sup, loader_val_sup, loader_unsup = nyu_lab_loader("../ssl_data_96", args.batch_size, downsample_params=[args.downsample_size, args.num_ab_classes, args.num_L_classes])
++    loader_sup, loader_val_sup, loader_unsup = nyu_lab_loader("../ssl_data_96", args.batch_size, downsample_params=[args.downsample_size, args.num_classes_ch2, args.num_classes_ch1], image_space=args.image_space, num_samples=args.num_samples_per_class)
++
++    print(len(loader_sup))
+ 
+     # Define an optimizer and criterion
+     criterion = nn.CrossEntropyLoss()
+-    optimizer = optim.Adam(classifier.parameters())
++    optimizer = optim.Adam(classifier.parameters(), lr=1e-4)
++    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=args.lr_decay)
+ 
+     if args.wandb_on:
+         wandb.watch(classifier)
+@@ -97,14 +103,14 @@ def main():
+ 
+         for i, (inputs, labels, _) in enumerate(loader_sup, 0):
+             inputs = get_torch_vars(inputs.type(torch.FloatTensor))
+-            L = inputs[:, 0, :, :]  # one channel
+-            ab = inputs[:, 1:3, :, :]  # two channels
++            ch1 = inputs[:, 0, :, :]  # one channel
++            ch2 = inputs[:, 1:3, :, :]  # two channels
+             labels = get_torch_vars(labels)
+ 
+             optimizer.zero_grad()
+ 
+             # ============ Forward ============
+-            out = classifier((ab, L))
++            out = classifier((ch2, ch1))
+ 
+             # =========== Compute Loss =========
+ 
+@@ -115,18 +121,18 @@ def main():
+             optimizer.step()
+ 
+             if args.verbose:
+-                print("Iteration number: ", i)
+-                #grid_imshow(inputs, inputs)
++                print("Iteration number: ", i, ", Loss: ", loss.data)
+ 
+             # ============ Logging ============
+-            if i % 1000 == 999:
++            logging_interval = 1
++            if i % logging_interval == logging_interval-1:
+                 if args.wandb_on:
+-                    wandb.log({"Finetuning Loss": running_loss / 1000,
++                    wandb.log({"Finetuning Loss": running_loss / logging_interval,
+                            "Epoch" : epoch + 1,
+                            "Iteration" : i + 1,
+                            })
+                 print('[%d, %5d] loss: %.3f' %
+-                      (epoch + 1, i + 1, running_loss / 1000))
++                      (epoch + 1, i + 1, running_loss / logging_interval))
+                 running_loss = 0.0
+ 
+         ''' Do Validation: After every epoch to check for overfitting '''
+@@ -138,14 +144,14 @@ def main():
+ 
+             for j, (img, target, _) in enumerate(loader_val_sup, 0):
+                 img = get_torch_vars(img)
+-                L_ = img[:, 0, :, :]  # one channel
+-                ab_ = img[:, 1:3, :, :]  # two channels
++                ch1_ = img[:, 0, :, :]  # one channel
++                ch2_ = img[:, 1:3, :, :]  # two channels
+                 target = get_torch_vars(target)
+                 batch_size = img.shape[0]
+                 n_samples += batch_size
+ 
+                 # ============ Forward ============
+-                output = classifier((ab_, L_))
++                output = classifier((ch2_, ch1_))
+ 
+                 # ============ Accuracy ============
+                 # Top 1 accuracy
+@@ -177,9 +183,12 @@ def main():
+             print('Validation top %d accuracy: %f'% (top_k, top_k_acc))
+ 
+         ''' Save Trained Model '''
+-        print('Done Training. Saving Model...')
++        print('Done Training Epoch ', epoch, '. Saving Model...')
+         torch.save(classifier.state_dict(), finetuned_weight_name)
+ 
++        ''' Update Learning Rate '''
++        scheduler.step()
++
+     exit(0)
+ 
+ if __name__ == '__main__':
+diff --git a/split_brain_pretrain.py b/split_brain_pretrain.py
+index 5337324..eea4651 100644
+--- a/split_brain_pretrain.py
++++ b/split_brain_pretrain.py
+@@ -28,7 +28,7 @@ def main():
+     # Things that rarely change
+     parser.add_argument("--wandb", '-name_of_wandb_proj', type=str, default="le-project",
+                         help="Name of WAND Project.", metavar='w1')
+-    parser.add_argument("--weights_folder", '-folder_name', type=str, default='weights',
++    parser.add_argument("--weights_folder", '-folder_name', type=str, default='weights_64',
+                         help="Name of weights folder for all weights.", metavar='w')
+     parser.add_argument("--epochs", '-num_epochs', type=int, default=40,
+                         help="Number of epochs.", metavar='ep')
+@@ -39,24 +39,23 @@ def main():
+     parser.add_argument("--downsample_size", '-num_pixels', type=int, default=12,
+                         help="size of image on which to perform classification", metavar='dsc')
+ 
+-
+     # Things that change when you put model on GPU or remote cluster
+     parser.add_argument("--verbose", '-verbose_mode', type=bool, default=True,
+                         help="Show images as you feed them in, show reconstructions as they come out.", metavar='b')
+     parser.add_argument("--wandb_on", '-is_wand_on', type=bool, default=False,
+                         help="Name of WAND Project.", metavar='w2')
+-    parser.add_argument("--ckpt_on", '-load_weights_from_ckpt', type=bool, default=False,
++    parser.add_argument("--ckpt_on", '-load_weights_from_ckpt', type=bool, default=True,
+                         help="Whether to load an existing pretrained ckpt, usually to debug.", metavar='ckpt')
+-    parser.add_argument("--batch_size", '-num_examples_per_batch', type=int, default=32,
++    parser.add_argument("--batch_size", '-num_examples_per_batch', type=int, default=64,
+                         help="Batch size.", metavar='bs')
+ 
+     # Things that change the most
+     parser.add_argument("--model_type", '-model', type=str, default='simple',
+                         help="Type of Autoencoder used.", metavar='mod')
+-    parser.add_argument("--lr_decay", '-learning_rate_decay', type=float, default=0.5,
++    parser.add_argument("--lr_decay", '-learning_rate_decay', type=float, default=0.1,
+                         help="percentage by which the learning rate will decrease after every epoch", metavar='lrd')
+     # Possible: rgb, lab, lab_distort
+-    parser.add_argument("--image_space", '-type_of_img_rep', type=str, default="rgb",
++    parser.add_argument("--image_space", '-type_of_img_rep', type=str, default="lab",
+                         help="The image space of the input and output of the network.", metavar='ims')
+ 
+     args = parser.parse_args()
+@@ -147,7 +146,7 @@ def main():
+             optimizer.step()
+ 
+             # ============ Verbose ============
+-            '''if args.verbose and i % 1 == 0:
++            if args.verbose:
+ 
+                 # Recover output of network as images: Use indices of top-1 logit to identify bins
+                 ch2_top = torch.topk(ch2_hat_4loss.view(-1, args.num_classes_ch2**2), k=1, dim=1)[1]
+@@ -177,8 +176,8 @@ def main():
+                     rgb_input = lab_to_rgb_list(denormalize_lab(inputs).cpu())
+                     rgb_output = lab_to_rgb_list(rescale_color("lab", reconstructed, args.num_classes_ch1, args.num_classes_ch2))
+                     rgb_input_from_downsized = lab_to_rgb_list(rescale_color("lab", downsample, args.num_classes_ch1, args.num_classes_ch2))
+-                #grid_imshow(rgb_input, rgb_output, rgb_input_from_downsized, second_label="Original Downsized")
+-            '''
++                grid_imshow(rgb_input, rgb_output, rgb_input_from_downsized, second_label="Original Downsized")
++
+ 
+             # ============ Logging ============
+             running_loss_ch2 += loss_ch2.data
+diff --git a/utils.py b/utils.py
+index 08c401b..cc97954 100644
+--- a/utils.py
++++ b/utils.py
+@@ -17,7 +17,7 @@ file_path = os.path.dirname(os.path.abspath(__file__))
+ 
+ 
+ ''' Creates model from given params'''
+-def create_sb_model(type="alex",  ckpt=None, num_ch2=25, num_ch1=100):
++def create_sb_model(type="alex",  ckpt=None, num_ch2=25, num_ch1=100, downsample_size=12):
+ 
+     # Pretraining Model
+     if type in {"alex","resnet","googl", "simple"}:
+@@ -33,7 +33,7 @@ def create_sb_model(type="alex",  ckpt=None, num_ch2=25, num_ch1=100):
+ 
+     # Finetuning Model
+     elif type.split('_')[0] == 'classifier':
+-        ae = SBNetClassifier(encoder=type.split('_')[1], classifier=type.split('_')[2], num_ch2=num_ch2, num_ch1=num_ch1)
++        ae = SBNetClassifier(encoder=type.split('_')[1], classifier=type.split('_')[2], num_ch2=num_ch2, num_ch1=num_ch1, downsample_size=downsample_size)
+         print_model("Pretrained encoder", ae.sp, c=type.split('_')[2], classifier=ae.classifier)
+ 
+         if ckpt != None: # Add ckpt
+diff --git a/wandb/debug.log b/wandb/debug.log
+index 9e6e794..24346ad 100644
+--- a/wandb/debug.log
++++ b/wandb/debug.log
+@@ -1,100 +1,16 @@
+-2019-05-10 17:21:54,910 DEBUG   MainThread:27759 [wandb_config.py:_load_defaults():81] no defaults not found in config-defaults.yaml
+-2019-05-10 17:21:54,917 DEBUG   MainThread:27759 [cmd.py:execute():722] Popen(['git', 'cat-file', '--batch-check'], cwd=/Users/Caetius/Desktop/LeProject/Split_Brain_AE, universal_newlines=False, shell=None)
+-2019-05-10 17:21:54,930 DEBUG   MainThread:27759 [cmd.py:execute():722] Popen(['git', 'rev-parse', '--show-toplevel'], cwd=/Users/Caetius/Desktop/LeProject/Split_Brain_AE, universal_newlines=False, shell=None)
+-2019-05-10 17:21:54,951 DEBUG   MainThread:27759 [run_manager.py:__init__():452] Initialized sync for le-project/ki27p8v6
+-2019-05-10 17:21:54,956 INFO    MainThread:27759 [run_manager.py:wrap_existing_process():986] wrapping existing process 27747
+-2019-05-10 17:21:54,976 DEBUG   MainThread:27759 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): pypi.org:443
+-2019-05-10 17:21:55,027 DEBUG   MainThread:27759 [connectionpool.py:_make_request():393] https://pypi.org:443 "GET /pypi/wandb/json HTTP/1.1" 200 31060
+-2019-05-10 17:21:55,038 INFO    MainThread:27759 [run_manager.py:init_run():810] system metrics and metadata threads started
+-2019-05-10 17:21:55,039 INFO    MainThread:27759 [run_manager.py:init_run():844] upserting run before process can begin, waiting at most 10 seconds
+-2019-05-10 17:21:55,175 DEBUG   Thread-13 :27759 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): api.wandb.ai:443
+-2019-05-10 17:21:55,303 DEBUG   Thread-13 :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 357
+-2019-05-10 17:21:55,307 INFO    Thread-13 :27759 [run_manager.py:_upsert_run():900] saving patches
+-2019-05-10 17:21:55,307 DEBUG   Thread-13 :27759 [cmd.py:execute():722] Popen(['git', 'rev-parse', '--show-toplevel'], cwd=/Users/Caetius/Desktop/LeProject/Split_Brain_AE, universal_newlines=False, shell=None)
+-2019-05-10 17:21:55,318 DEBUG   Thread-13 :27759 [cmd.py:execute():722] Popen(['git', 'diff', '--cached', '--abbrev=40', '--full-index', '--raw'], cwd=/Users/Caetius/Desktop/LeProject/Split_Brain_AE, universal_newlines=False, shell=None)
+-2019-05-10 17:21:55,329 DEBUG   Thread-13 :27759 [cmd.py:execute():722] Popen(['git', 'diff', '--abbrev=40', '--full-index', '--raw'], cwd=/Users/Caetius/Desktop/LeProject/Split_Brain_AE, universal_newlines=False, shell=None)
+-2019-05-10 17:21:55,341 DEBUG   Thread-13 :27759 [cmd.py:execute():722] Popen(['git', 'version'], cwd=/Users/Caetius/Desktop/LeProject/Split_Brain_AE, universal_newlines=False, shell=None)
+-2019-05-10 17:21:55,363 INFO    Thread-13 :27759 [run_manager.py:_upsert_run():902] saving pip packages
+-2019-05-10 17:21:55,363 INFO    Thread-13 :27759 [run_manager.py:_upsert_run():904] initializing streaming files api
+-2019-05-10 17:21:55,364 INFO    Thread-13 :27759 [run_manager.py:_upsert_run():911] unblocking file change observer, beginning sync with W&B servers
+-2019-05-10 17:21:55,364 INFO    MainThread:27759 [run_manager.py:wrap_existing_process():1003] informing user process we are ready to proceed
+-2019-05-10 17:21:55,364 INFO    MainThread:27759 [run_manager.py:_sync_etc():1059] entering loop for messages from user process
+-2019-05-10 17:21:55,919 INFO    Thread-2  :27759 [run_manager.py:_on_file_created():576] file/dir created: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/diff.patch
+-2019-05-10 17:21:55,921 INFO    Thread-2  :27759 [run_manager.py:_on_file_created():576] file/dir created: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
+-2019-05-10 17:21:55,922 INFO    Thread-2  :27759 [run_manager.py:_on_file_created():576] file/dir created: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/requirements.txt
+-2019-05-10 17:21:55,922 INFO    Thread-2  :27759 [run_manager.py:_on_file_created():576] file/dir created: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/config.yaml
+-2019-05-10 17:21:55,932 DEBUG   Thread-2  :27759 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): api.wandb.ai:443
+-2019-05-10 17:21:56,029 DEBUG   Thread-2  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 1058
+-2019-05-10 17:21:56,035 DEBUG   Thread-14 :27759 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): api.wandb.ai:443
+-2019-05-10 17:21:56,123 DEBUG   Thread-14 :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 747
+-2019-05-10 17:21:56,151 DEBUG   Thread-14 :27759 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): storage.googleapis.com:443
+-2019-05-10 17:21:56,571 DEBUG   Thread-14 :27759 [connectionpool.py:_make_request():393] https://storage.googleapis.com:443 "PUT /wandb-production.appspot.com/dlc423/le-project/ki27p8v6/config.yaml?Expires=1557523376&GoogleAccessId=gorilla-cloud-storage%40wandb-production.iam.gserviceaccount.com&Signature=ANny4qQ9Q3AAsLuuhP3KEUAoogQAQfhWVYpsMjbwEPQAIaJllTH3VPRm5WZV6UcoBwzFIl0pgC5mK88ToSsHrAk4Xt8NoYOY%2BwrM08JaaCYlF1k9y%2FbTRA4Ft5vrG%2B%2B%2F08KYeNpqYsnmRnkAeJMzr5zVqAlfVWuRVE84p9pEB%2Fq79MaZ%2B94h7%2FKnUtZf85Hpp56FI9vZmaMWzWUztXE9grbtxXsMed0F3mkggIZrAYOEW149HFHRvfQ3RFNgAPNOJPd6G8aVoUj71qtsjd7Dkv%2FePsJKglOO25QmHqK3Zvw7K5Ck8egv51KLF0tKYdYS5hwBpmnC%2BN0FGDnfkwsRgA%3D%3D HTTP/1.1" 200 0
+-2019-05-10 17:21:57,484 DEBUG   Thread-6  :27759 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): api.wandb.ai:443
+-2019-05-10 17:21:57,609 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
+-2019-05-10 17:22:11,969 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
+-2019-05-10 17:22:24,012 INFO    Thread-2  :27759 [run_manager.py:_on_file_created():576] file/dir created: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-events.jsonl
+-2019-05-10 17:22:24,094 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
+-2019-05-10 17:22:28,024 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
+-2019-05-10 17:22:44,090 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
+-2019-05-10 17:22:54,189 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
+-2019-05-10 17:22:55,111 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-events.jsonl
+-2019-05-10 17:22:55,198 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
+-2019-05-10 17:23:00,125 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
+-2019-05-10 17:23:16,164 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
+-2019-05-10 17:23:25,191 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-events.jsonl
+-2019-05-10 17:23:25,267 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
+-2019-05-10 17:23:32,214 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
+-2019-05-10 17:23:47,258 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
+-2019-05-10 17:23:55,338 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
+-2019-05-10 17:23:56,286 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-events.jsonl
+-2019-05-10 17:23:56,339 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
+-2019-05-10 17:24:03,310 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
+-2019-05-10 17:24:19,362 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
+-2019-05-10 17:24:26,406 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
+-2019-05-10 17:24:27,382 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-events.jsonl
+-2019-05-10 17:24:27,394 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
+-2019-05-10 17:24:35,403 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
+-2019-05-10 17:24:51,458 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
+-2019-05-10 17:24:57,473 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
+-2019-05-10 17:24:57,478 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-events.jsonl
+-2019-05-10 17:25:07,510 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
+-2019-05-10 17:25:23,552 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
+-2019-05-10 17:25:27,534 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
+-2019-05-10 17:25:28,533 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
+-2019-05-10 17:25:28,569 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-events.jsonl
+-2019-05-10 17:25:39,596 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
+-2019-05-10 17:25:55,654 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
+-2019-05-10 17:25:58,601 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
+-2019-05-10 17:25:59,605 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
+-2019-05-10 17:25:59,661 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-events.jsonl
+-2019-05-10 17:26:11,695 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
+-2019-05-10 17:26:27,741 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
+-2019-05-10 17:26:29,676 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
+-2019-05-10 17:26:29,746 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-events.jsonl
+-2019-05-10 17:26:29,748 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
+-2019-05-10 17:26:43,796 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
+-2019-05-10 17:26:59,817 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
+-2019-05-10 17:26:59,840 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
+-2019-05-10 17:27:00,814 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
+-2019-05-10 17:27:00,842 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-events.jsonl
+-2019-05-10 17:27:15,902 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
+-2019-05-10 17:27:30,882 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
+-2019-05-10 17:27:31,952 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-events.jsonl
+-2019-05-10 17:27:31,956 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
+-2019-05-10 17:27:32,023 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
+-2019-05-10 17:27:48,008 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
+-2019-05-10 17:28:02,062 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-events.jsonl
+-2019-05-10 17:28:02,083 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
+-2019-05-10 17:28:02,918 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
+-2019-05-10 17:28:04,071 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
+-2019-05-10 17:28:20,128 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
+-2019-05-10 17:28:33,169 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-events.jsonl
+-2019-05-10 17:28:33,534 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
+-2019-05-10 17:28:34,244 DEBUG   Thread-6  :27759 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /dlc423/le-project/ki27p8v6/file_stream HTTP/1.1" 200 312
+-2019-05-10 17:28:36,175 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-metadata.json
+-2019-05-10 17:28:40,080 INFO    MainThread:27759 [run_manager.py:_sync_etc():1110] process received interrupt signal, shutting down
+-2019-05-10 17:28:40,081 INFO    MainThread:27759 [run_manager.py:_sync_etc():1163] closing log streams and sending exitcode to W&B
+-2019-05-10 17:28:40,082 INFO    MainThread:27759 [run_manager.py:shutdown():918] shutting down system stats and metadata service
+-2019-05-10 17:28:40,187 INFO    Thread-2  :27759 [run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-events.jsonl
+-wn system stats and metadata service
+-2019-05-10 17:28:40,187 INFO    Thread-2  :27759 [ki27p8v6:run_manager.py:_on_file_modified():587] file/dir modified: /Users/Caetius/Desktop/LeProject/Split_Brain_AE/wandb/run-20190510_212154-ki27p8v6/wandb-events.jsonl
++2019-05-11 19:13:12,409 DEBUG   MainThread:53554 [wandb_config.py:_load_defaults():81] no defaults not found in config-defaults.yaml
++2019-05-11 19:13:12,415 DEBUG   MainThread:53554 [cmd.py:execute():722] Popen(['git', 'cat-file', '--batch-check'], cwd=/Users/Caetius/Desktop/LeProject/Split_Brain_AE, universal_newlines=False, shell=None)
++2019-05-11 19:13:12,425 DEBUG   MainThread:53554 [cmd.py:execute():722] Popen(['git', 'rev-parse', '--show-toplevel'], cwd=/Users/Caetius/Desktop/LeProject/Split_Brain_AE, universal_newlines=False, shell=None)
++2019-05-11 19:13:12,442 DEBUG   MainThread:53554 [run_manager.py:__init__():452] Initialized sync for le-project/brzcyepg
++2019-05-11 19:13:12,446 INFO    MainThread:53554 [run_manager.py:wrap_existing_process():986] wrapping existing process 53542
++2019-05-11 19:13:12,462 DEBUG   MainThread:53554 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): pypi.org:443
++2019-05-11 19:13:12,500 DEBUG   MainThread:53554 [connectionpool.py:_make_request():393] https://pypi.org:443 "GET /pypi/wandb/json HTTP/1.1" 200 31060
++2019-05-11 19:13:12,511 INFO    MainThread:53554 [run_manager.py:init_run():810] system metrics and metadata threads started
++2019-05-11 19:13:12,511 INFO    MainThread:53554 [run_manager.py:init_run():844] upserting run before process can begin, waiting at most 10 seconds
++2019-05-11 19:13:12,518 DEBUG   Thread-13 :53554 [connectionpool.py:_new_conn():823] Starting new HTTPS connection (1): api.wandb.ai:443
++2019-05-11 19:13:12,683 DEBUG   Thread-13 :53554 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 356
++2019-05-11 19:13:12,685 INFO    Thread-13 :53554 [run_manager.py:_upsert_run():900] saving patches
++2019-05-11 19:13:12,686 DEBUG   Thread-13 :53554 [cmd.py:execute():722] Popen(['git', 'rev-parse', '--show-toplevel'], cwd=/Users/Caetius/Desktop/LeProject/Split_Brain_AE, universal_newlines=False, shell=None)
++2019-05-11 19:13:12,698 DEBUG   Thread-13 :53554 [cmd.py:execute():722] Popen(['git', 'diff', '--cached', '--abbrev=40', '--full-index', '--raw'], cwd=/Users/Caetius/Desktop/LeProject/Split_Brain_AE, universal_newlines=False, shell=None)
++2019-05-11 19:13:12,709 DEBUG   Thread-13 :53554 [cmd.py:execute():722] Popen(['git', 'diff', '--abbrev=40', '--full-index', '--raw'], cwd=/Users/Caetius/Desktop/LeProject/Split_Brain_AE, universal_newlines=False, shell=None)
++2019-05-11 19:13:12,723 DEBUG   Thread-13 :53554 [cmd.py:execute():722] Popen(['git', 'version'], cwd=/Users/Caetius/Desktop/LeProject/Split_Brain_AE, universal_newlines=False, shell=None)

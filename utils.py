@@ -17,7 +17,7 @@ file_path = os.path.dirname(os.path.abspath(__file__))
 
 
 ''' Creates model from given params'''
-def create_sb_model(type="alex",  ckpt=None, num_ch2=25, num_ch1=100):
+def create_sb_model(type="alex",  ckpt=None, num_ch2=25, num_ch1=100, downsample_size=12):
 
     # Pretraining Model
     if type in {"alex","resnet","googl", "simple"}:
@@ -33,7 +33,7 @@ def create_sb_model(type="alex",  ckpt=None, num_ch2=25, num_ch1=100):
 
     # Finetuning Model
     elif type.split('_')[0] == 'classifier':
-        ae = SBNetClassifier(encoder=type.split('_')[1], classifier=type.split('_')[2], num_ch2=num_ch2, num_ch1=num_ch1)
+        ae = SBNetClassifier(encoder=type.split('_')[1], classifier=type.split('_')[2], num_ch2=num_ch2, num_ch1=num_ch1, downsample_size=downsample_size)
         print_model("Pretrained encoder", ae.sp, c=type.split('_')[2], classifier=ae.classifier)
 
         if ckpt != None: # Add ckpt

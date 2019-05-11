@@ -1,0 +1,20 @@
+{
+    "root": "/Users/Caetius/Desktop/LeProject/Split_Brain_AE",
+    "git": {
+        "remote": "https://github.com/caetius/LeProject.git",
+        "commit": "5112b7835d6fe6b3328a2dc3d1da48daf92f1197"
+    },
+    "email": "dlcasabuena@gmail.com",
+    "startedAt": "2019-05-11T23:13:11.926133",
+    "host": "MacBook-Pro-8.fios-router.home",
+    "username": "Caetius",
+    "os": "Darwin-18.5.0-x86_64-i386-64bit",
+    "python": "3.6.7",
+    "cpu_count": 8,
+    "program": "/anaconda3/envs/cpc/lib/python3.6/site-packages/wandb/internal_cli.py",
+    "args": [
+        "{\"command\": \"headless\", \"pid\": 53542, \"stdout_master_fd\": 7, \"stderr_master_fd\": 9, \"cloud\": true, \"port\": 57183}"
+    ],
+    "state": "running",
+    "heartbeatAt": "2019-05-11T23:13:12.442247"
+}

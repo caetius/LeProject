@@ -1,0 +1,55 @@
+Split Brain Parameters- AB Net:  389632
+Split Brain Parameters- ch1 Net:  389440
+Classifier Params:  28801000
+Total Finetuning Params:  29580072
+============== Pretrained encoder ==============
+SplitBrain(
+  (ch2_net): SimpleAE(
+    (encoder): Sequential(
+      (0): Conv2d(2, 12, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+      (1): BatchNorm2d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU()
+      (3): Conv2d(12, 24, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+      (4): BatchNorm2d(24, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (5): ReLU()
+      (6): Conv2d(24, 48, kernel_size=(5, 5), stride=(1, 1))
+      (7): BatchNorm2d(48, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (8): ReLU()
+      (9): Conv2d(48, 96, kernel_size=(5, 5), stride=(1, 1))
+      (10): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (11): ReLU()
+      (12): Conv2d(96, 100, kernel_size=(5, 5), stride=(1, 1))
+    )
+  )
+  (ch1_net): SimpleAE(
+    (encoder): Sequential(
+      (0): Conv2d(1, 12, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+      (1): BatchNorm2d(12, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU()
+      (3): Conv2d(12, 24, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+      (4): BatchNorm2d(24, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (5): ReLU()
+      (6): Conv2d(24, 48, kernel_size=(5, 5), stride=(1, 1))
+      (7): BatchNorm2d(48, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (8): ReLU()
+      (9): Conv2d(48, 96, kernel_size=(5, 5), stride=(1, 1))
+      (10): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (11): ReLU()
+      (12): Conv2d(96, 100, kernel_size=(5, 5), stride=(1, 1))
+    )
+  )
+)
+============== shallow ==============
+ShallowClassifier(
+  (classifier): Linear(in_features=28800, out_features=1000, bias=True)
+)
+Loading checkpoint  /Users/Caetius/Desktop/LeProject/Split_Brain_AE/weights_64/sb_simple_rgb_0.5.pth
+Iteration number:  0 , Loss:  tensor(9.6474)
+Iteration number:  1 , Loss:  tensor(144.3402)
+Iteration number:  2 , Loss:  tensor(184.7662)
+Iteration number:  3 , Loss:  tensor(164.3991)
+Iteration number:  4 , Loss:  tensor(139.3313)
+Iteration number:  5 , Loss:  tensor(98.2835)
+Iteration number:  6 , Loss:  tensor(83.6575)
+Iteration number:  7 , Loss:  tensor(64.1879)
+Iteration number:  8 , Loss:  tensor(37.8529)

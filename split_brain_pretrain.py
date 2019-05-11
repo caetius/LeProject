@@ -28,7 +28,7 @@ def main():
     # Things that rarely change
     parser.add_argument("--wandb", '-name_of_wandb_proj', type=str, default="le-project",
                         help="Name of WAND Project.", metavar='w1')
-    parser.add_argument("--weights_folder", '-folder_name', type=str, default='weights',
+    parser.add_argument("--weights_folder", '-folder_name', type=str, default='weights_64',
                         help="Name of weights folder for all weights.", metavar='w')
     parser.add_argument("--epochs", '-num_epochs', type=int, default=40,
                         help="Number of epochs.", metavar='ep')
@@ -39,24 +39,23 @@ def main():
     parser.add_argument("--downsample_size", '-num_pixels', type=int, default=12,
                         help="size of image on which to perform classification", metavar='dsc')
 
-
     # Things that change when you put model on GPU or remote cluster
     parser.add_argument("--verbose", '-verbose_mode', type=bool, default=True,
                         help="Show images as you feed them in, show reconstructions as they come out.", metavar='b')
     parser.add_argument("--wandb_on", '-is_wand_on', type=bool, default=False,
                         help="Name of WAND Project.", metavar='w2')
-    parser.add_argument("--ckpt_on", '-load_weights_from_ckpt', type=bool, default=False,
+    parser.add_argument("--ckpt_on", '-load_weights_from_ckpt', type=bool, default=True,
                         help="Whether to load an existing pretrained ckpt, usually to debug.", metavar='ckpt')
-    parser.add_argument("--batch_size", '-num_examples_per_batch', type=int, default=32,
+    parser.add_argument("--batch_size", '-num_examples_per_batch', type=int, default=64,
                         help="Batch size.", metavar='bs')
 
     # Things that change the most
     parser.add_argument("--model_type", '-model', type=str, default='simple',
                         help="Type of Autoencoder used.", metavar='mod')
-    parser.add_argument("--lr_decay", '-learning_rate_decay', type=float, default=0.5,
+    parser.add_argument("--lr_decay", '-learning_rate_decay', type=float, default=0.1,
                         help="percentage by which the learning rate will decrease after every epoch", metavar='lrd')
     # Possible: rgb, lab, lab_distort
-    parser.add_argument("--image_space", '-type_of_img_rep', type=str, default="rgb",
+    parser.add_argument("--image_space", '-type_of_img_rep', type=str, default="lab",
                         help="The image space of the input and output of the network.", metavar='ims')
 
     args = parser.parse_args()
@@ -147,7 +146,7 @@ def main():
             optimizer.step()
 
             # ============ Verbose ============
-            '''if args.verbose and i % 1 == 0:
+            if args.verbose:
 
                 # Recover output of network as images: Use indices of top-1 logit to identify bins
                 ch2_top = torch.topk(ch2_hat_4loss.view(-1, args.num_classes_ch2**2), k=1, dim=1)[1]
@@ -177,8 +176,8 @@ def main():
                     rgb_input = lab_to_rgb_list(denormalize_lab(inputs).cpu())
                     rgb_output = lab_to_rgb_list(rescale_color("lab", reconstructed, args.num_classes_ch1, args.num_classes_ch2))
                     rgb_input_from_downsized = lab_to_rgb_list(rescale_color("lab", downsample, args.num_classes_ch1, args.num_classes_ch2))
-                #grid_imshow(rgb_input, rgb_output, rgb_input_from_downsized, second_label="Original Downsized")
-            '''
+                grid_imshow(rgb_input, rgb_output, rgb_input_from_downsized, second_label="Original Downsized")
+
 
             # ============ Logging ============
             running_loss_ch2 += loss_ch2.data
