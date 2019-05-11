@@ -2,4 +2,5 @@ weights*
 images
 __pycache__
 .idea
+wandb
 .DS_Store

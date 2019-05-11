@@ -122,7 +122,7 @@ def main():
                 print("Iteration number: ", i, ", Loss: ", loss.data)
 
             # ============ Logging ============
-            logging_interval = 1
+            logging_interval = 500
             if i % logging_interval == logging_interval-1:
                 if args.wandb_on:
                     wandb.log({"Finetuning Loss": running_loss / logging_interval,
